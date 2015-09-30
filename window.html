@@ -4,10 +4,23 @@
     <title>VoiceRead for Chrome</title>
     <style>
       body {
+        background-color: #333;
+        color: #DDD;
         font-family: "Avenir Next", "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
         font-size: 50px;
-        width: 100%;
+        letter-spacing: 3px;
         text-align: center;
+        width: 100%;
+      }
+      .line {
+        margin: 5px 0px;
+      }
+      .highlighted {
+        background-color: blue;
+      }
+      .word:after {
+        content: ' ';
+        background-color: #333 !important;
       }
     </style>
     <script src="text.js"></script>
