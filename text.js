@@ -1,10 +1,13 @@
+var voices = [];
+var wordElements = [];
+var currentWord = 0;
+
 function openHighlightedText(text) {
   var words = text.split(/\s+/);
   var line = document.createElement('div');
   for(var i = 0; i < words.length; i++) {
     var word = document.createElement('span');
     word.className = 'word';
-    word.id = 'word-' + i;
     word.innerHTML = words[i];
     if (i % 3 == 0 && i != 0) {
       line.className = 'line';
@@ -12,27 +15,33 @@ function openHighlightedText(text) {
       line = document.createElement('div');
     }
     line.appendChild(word);
-
-    var wordUtterance = new SpeechSynthesisUtterance(words[i]);
-    wordUtterance.onstart = highlight(word);
-    wordUtterance.onend = unhighlight(word);
-    speechSynthesis.pause();
-    speechSynthesis.speak(wordUtterance);
+    wordElements.push(word);
   }
   document.getElementById('text').appendChild(line);
-  speechSynthesis.resume();
+  var utterance = new SpeechSynthesisUtterance(text);
+  utterance.onboundary = highlightWord;
+  if (voices.length > 0) {
+    console.log('hello');
+    utterance.voice = voices.filter(function(voice) {return voice.name == 'Karen'})[0];
+  }
+  speechSynthesis.speak(utterance);
 }
 
-function highlight(word) {
-  return function() {
-      word.className = 'highlighted word';
-    };
+function highlightWord() {
+  if (currentWord != 0) {
+    wordElements[currentWord - 1].className = 'word';
+  }
+  wordElements[currentWord].className = 'highlighted word';
+  wordElements[currentWord].scrollIntoView(true);
+  currentWord++;
 }
 
-function unhighlight(word) {
-  return function() {
-      word.className = 'word';
-    };
+speechSynthesis.onvoiceschanged = function() {
+  voices = speechSynthesis.getVoices().filter(isLocalEnglish);
+}
+
+function isLocalEnglish(element, index, array) {
+  return element.localService && element.lang.indexOf('en') > -1;
 }
 
 window.addEventListener('DOMContentLoaded', function() {
