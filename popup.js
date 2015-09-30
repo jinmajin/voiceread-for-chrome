@@ -11,8 +11,9 @@ window.addEventListener('DOMContentLoaded', function() {
         lastFocusedWindow: true
     }, function(tabs) {
         chrome.tabs.sendMessage(
-                tabs[0].id,
-                {from: 'popup', subject: 'text'},
-                openReadWindow);
+          tabs[0].id,
+          {from: 'popup', subject: 'text'},
+          openReadWindow
+        );
     });
 });

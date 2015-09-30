@@ -21,7 +21,6 @@ function openHighlightedText(text) {
   var utterance = new SpeechSynthesisUtterance(text);
   utterance.onboundary = highlightWord;
   if (voices.length > 0) {
-    console.log('hello');
     utterance.voice = voices.filter(function(voice) {return voice.name == 'Karen'})[0];
   }
   speechSynthesis.speak(utterance);
@@ -50,8 +49,9 @@ window.addEventListener('DOMContentLoaded', function() {
       lastFocusedWindow: true
   }, function(tabs) {
       chrome.tabs.sendMessage(
-              tabs[0].id,
-              {from: 'popup', subject: 'text'},
-              openHighlightedText);
+        tabs[0].id,
+        {from: 'popup', subject: 'text'},
+        openHighlightedText
+      );
   });
 });
