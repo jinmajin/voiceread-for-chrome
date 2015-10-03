@@ -3,27 +3,28 @@ var wordElements = [];
 var currentWord = 0;
 
 function openHighlightedText(text) {
-  var words = text.split(/\s+/);
-  var line = document.createElement('div');
-  for(var i = 0; i < words.length; i++) {
-    var word = document.createElement('span');
-    word.className = 'word';
-    word.innerHTML = words[i];
-    if (i % 3 == 0 && i != 0) {
-      line.className = 'line';
-      document.getElementById('text').appendChild(line);
-      line = document.createElement('div');
+  if (text) {
+    var words = text.split(/\s+/);
+    for(var i = 0; i < words.length; i++) {
+      var word = document.createElement('span');
+      word.className = 'word';
+      word.innerHTML = words[i];
+      document.getElementById('text').appendChild(word);
+      wordElements.push(word);
     }
-    line.appendChild(word);
-    wordElements.push(word);
+    var utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 2.0;
+    utterance.onboundary = highlightWord;
+    if (voices.length > 0) {
+      utterance.voice = voices.filter(function(voice) {return voice.name == 'Karen'})[0];
+    }
+    speechSynthesis.speak(utterance);
+    var currentPosition = 0;
+    var interval = setInterval(function(){
+      currentPosition += .075 + (wordElements[currentWord].offsetTop - currentPosition)*.0025*utterance.rate;        
+      window.scroll(0, currentPosition);
+    }, 10);
   }
-  document.getElementById('text').appendChild(line);
-  var utterance = new SpeechSynthesisUtterance(text);
-  utterance.onboundary = highlightWord;
-  if (voices.length > 0) {
-    utterance.voice = voices.filter(function(voice) {return voice.name == 'Karen'})[0];
-  }
-  speechSynthesis.speak(utterance);
 }
 
 function highlightWord() {
@@ -31,7 +32,6 @@ function highlightWord() {
     wordElements[currentWord - 1].className = 'word';
   }
   wordElements[currentWord].className = 'highlighted word';
-  wordElements[currentWord].scrollIntoView(true);
   currentWord++;
 }
 
@@ -45,13 +45,14 @@ function isLocalEnglish(element, index, array) {
 
 window.addEventListener('DOMContentLoaded', function() {
   chrome.tabs.query({
-      active: true,
-      lastFocusedWindow: true
+      active: true
   }, function(tabs) {
-      chrome.tabs.sendMessage(
-        tabs[0].id,
-        {from: 'popup', subject: 'text'},
-        openHighlightedText
-      );
+      for (var i = 0; i < tabs.length; i++) {
+        chrome.tabs.sendMessage(
+          tabs[i].id,
+          {from: 'popup', subject: 'text'},
+          openHighlightedText
+        );
+      }
   });
 });
