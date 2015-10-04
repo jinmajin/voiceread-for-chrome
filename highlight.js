@@ -26,7 +26,7 @@ body { \
   width: 600px; \
   max-height: ' + height + 'px; \
   line-height: 50px; \
-  overflow-y: scroll; \
+  overflow-y: hidden; \
   margin: auto; \
 } \
 .highlighted { \
@@ -56,7 +56,7 @@ function openHighlightedText(text) {
     var currentPosition = 0;
     var interval = setInterval(function(){
       if (wordElements[currentWord]) {
-        currentPosition += .075 + (wordElements[currentWord].offset().top)*.0025*utterance.rate;        
+        currentPosition += .075 + (wordElements[currentWord][0].offsetTop - currentPosition)*.0025*utterance.rate;        
         $('#text')[0].scrollTop = currentPosition;
       } else {
         clearInterval(interval);
