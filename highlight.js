@@ -1,6 +1,13 @@
 var height = $(window).height();
-var fontColor = '#DDD';
+var width = 600;
+
 var backgroundColor = '#222';
+var charSpace = 5;
+var lineSpace = 10;
+
+var font = "Avenir Next";
+var fontSize = 50;
+var fontColor = '#DDD';
 var highlightColor = 'blue';
 
 $('body').prepend('<div id="voiceread"><div id="text"></div></div>');
@@ -11,9 +18,9 @@ body { \
 #voiceread { \
   background-color: rgba(0,0,0,.4); \
   color: ' + fontColor + '; \
-  font-family: "Avenir Next", "Segoe UI", "Lucida Grande", Tahoma, sans-serif; \
-  font-size: 50px; \
-  letter-spacing: 3px; \
+  font-family: "' + font + '", "Segoe UI", "Lucida Grande", Tahoma, sans-serif; \
+  font-size: ' + fontSize + 'px; \
+  letter-spacing: ' + charSpace + 'px; \
   left: 0px; \
   position: fixed; \
   text-align: center; \
@@ -23,9 +30,9 @@ body { \
 } \
 #text { \
   background-color: ' + backgroundColor + '; \
-  width: 600px; \
+  width: ' + width + 'px; \
   max-height: ' + height + 'px; \
-  line-height: 50px; \
+  line-height: ' + (fontSize + lineSpace) + 'px; \
   overflow-y: hidden; \
   margin: auto; \
 } \
