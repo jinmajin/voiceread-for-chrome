@@ -10,6 +10,8 @@ var fontSize = 50;
 var fontColor = '#DDD';
 var highlightColor = 'blue';
 
+var triggerKey = 'r';
+
 $('body').prepend('<div id="voiceread"><div id="text"></div></div>');
 $('<style>').prop('type', 'text/css').html(' \
 body { \
@@ -87,8 +89,9 @@ speechSynthesis.onvoiceschanged = function() {
 function isLocalEnglish(element, index, array) {
   return element.localService && element.lang.indexOf('en') > -1;
 }
+
 $(document).keydown(function(e) {
-  if (e.ctrlKey && (String.fromCharCode(e.which) === 'r' || String.fromCharCode(e.which) === 'R')) {
+  if (e.ctrlKey && (String.fromCharCode(e.which) === triggerKey || String.fromCharCode(e.which) === triggerKey.toUpperCase())) {
     var text = window.getSelection().toString();
     openHighlightedText(text);
   }
