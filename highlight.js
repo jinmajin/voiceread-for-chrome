@@ -15,12 +15,10 @@ var speechRate = 2.0;
 
 $('body').prepend('<div id="voiceread"><div id="text"></div></div>');
 $('<style>').prop('type', 'text/css').html(' \
-body { \
-  position: relative; \
-} \
 #voiceread { \
   background-color: rgba(0,0,0,.4); \
   color: ' + fontColor + '; \
+  display: none; \
   font-family: "' + font + '", "Segoe UI", "Lucida Grande", Tahoma, sans-serif; \
   font-size: ' + fontSize + 'px; \
   letter-spacing: ' + charSpace + 'px; \
@@ -62,6 +60,7 @@ function openHighlightedText(text) {
     if (voices.length > 0) {
       utterance.voice = voices.filter(function(voice) {return voice.name == 'Karen'})[0];
     }
+    $('#voiceread').show();
     speechSynthesis.speak(utterance);
     var currentPosition = 0;
     var interval = setInterval(function(){
