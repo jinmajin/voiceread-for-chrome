@@ -11,6 +11,7 @@ var fontColor = '#DDD';
 var highlightColor = 'blue';
 
 var triggerKey = 'r';
+var speechRate = 2.0;
 
 $('body').prepend('<div id="voiceread"><div id="text"></div></div>');
 $('<style>').prop('type', 'text/css').html(' \
@@ -56,7 +57,7 @@ function openHighlightedText(text) {
       wordElements.push(word);
     }
     var utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 2.0;
+    utterance.rate = speechRate;
     utterance.onboundary = highlightWord;
     if (voices.length > 0) {
       utterance.voice = voices.filter(function(voice) {return voice.name == 'Karen'})[0];
@@ -65,7 +66,7 @@ function openHighlightedText(text) {
     var currentPosition = 0;
     var interval = setInterval(function(){
       if (wordElements[currentWord]) {
-        currentPosition += .075 + (wordElements[currentWord][0].offsetTop - currentPosition)*.0025*utterance.rate;        
+        currentPosition += .075 + (wordElements[currentWord][0].offsetTop - currentPosition)*.0025*speechRate;        
         $('#text')[0].scrollTop = currentPosition;
       } else {
         clearInterval(interval);
