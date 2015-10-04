@@ -3,8 +3,31 @@
   <head>
     <title>VoiceRead for Chrome</title>
     <script src="popup.js"></script>
+    <style>
+      body {
+        background-color: #222;
+        color: #DDD;
+        font-family: "Avenir Next", "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+        font-size: 50px;
+        letter-spacing: 3px;
+        text-align: center;
+        width: 100%;
+      }
+      #text {
+        width: 600px;
+        margin: auto;
+      }
+      .highlighted {
+        background-color: blue;
+      }
+      .word:after {
+        content: ' ';
+        background-color: transparent !important;
+      }
+    </style>
   </head>
   <body>
+    <div id="text"></div>
   </body>
 </html>
 

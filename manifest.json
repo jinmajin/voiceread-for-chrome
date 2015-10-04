@@ -12,7 +12,10 @@
   "content_scripts": [
     {
         "matches": ["<all_urls>"],
-      "js": ["highlight.js"]
+      "js": [
+        "jquery.min.js",
+        "highlight.js"
+      ]
     }
   ], 
   "permissions": [
