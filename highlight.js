@@ -32,7 +32,7 @@ $('<style>').prop('type', 'text/css').html(' \
 #text { \
   background-color: ' + backgroundColor + '; \
   width: ' + width + 'px; \
-  max-height: ' + height + 'px; \
+  height: ' + height + 'px; \
   line-height: ' + (fontSize + lineSpace) + 'px; \
   overflow-y: hidden; \
   margin: auto; \
