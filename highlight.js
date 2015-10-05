@@ -16,7 +16,7 @@ var speechRate = 2.0;
 $('body').prepend('<div id="voiceread"><div id="text"></div></div>');
 $('<style>').prop('type', 'text/css').html(' \
 #voiceread { \
-  background-color: rgba(0,0,0,.4); \
+  background-color: rgba(0,0,0,.7); \
   color: ' + fontColor + '; \
   display: none; \
   font-family: "' + font + '", "Segoe UI", "Lucida Grande", Tahoma, sans-serif; \
@@ -41,12 +41,26 @@ $('<style>').prop('type', 'text/css').html(' \
   background-color: ' + highlightColor + '; \
 }').appendTo('head');
 
+$('#voiceread').click(function() {
+  $('#voiceread').hide();
+  $('#text').empty();
+  wordElements = [];
+  currentWord = 0;
+  utterance && utterance.stop();
+});
+
+$('#text').click(function(e) {
+  return false;
+});
+
 var voices = [];
 var wordElements = [];
 var currentWord = 0;
+var utterance = null;
 
 function openHighlightedText(text) {
   if (text) {
+    $('#text').empty();
     var words = text.split(/\s+/);
     for(var i = 0; i < words.length; i++) {
       var word = $('<span />').attr('className', 'word').html(words[i]);
@@ -54,7 +68,7 @@ function openHighlightedText(text) {
       $('#text').append(' ');
       wordElements.push(word);
     }
-    var utterance = new SpeechSynthesisUtterance(text);
+    utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = speechRate;
     utterance.onboundary = highlightWord;
     if (voices.length > 0) {
