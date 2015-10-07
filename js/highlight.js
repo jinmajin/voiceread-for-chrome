@@ -12,11 +12,11 @@ var highlightColor = 'blue';
 
 var triggerKey = 'r';
 var speechRate = 300; // in wpm
-speechRate = 200/speechRate; // in ratio
+speechRate = speechRate/200; // in ratio
 
 var opacity = .7;
 
-$('body').prepend('<div id="voiceread"><div id="text"></div></div>');
+$('body').prepend('<div id="voiceread"><div id="text"></div><div id="controls" class="pause"></div></div>');
 $('<style>').prop('type', 'text/css').html(' \
 #voiceread { \
   background-color: rgba(0,0,0,' + opacity + '); \
@@ -27,7 +27,7 @@ $('<style>').prop('type', 'text/css').html(' \
   letter-spacing: ' + charSpace + 'px; \
   left: 0px; \
   position: fixed; \
-  text-align: left; \
+  text-align: center; \
   top: 0px; \
   width: 100%; \
   z-index: 40000000; \
@@ -42,6 +42,24 @@ $('<style>').prop('type', 'text/css').html(' \
 } \
 .highlighted { \
   background-color: ' + highlightColor + '; \
+} \
+#controls { \
+  position: absolute; \
+  bottom: 10px; \
+  left: 20px; \
+} \
+.play { \
+  width: 0; \
+  height: 0; \
+  border-top: 50px solid transparent; \
+  border-bottom: 50px solid transparent; \
+  border-left: 75px solid white; \
+} \
+.pause { \
+  width: 30px; \
+  height: 85px; \
+  border-left: 30px solid white; \
+  border-right: 30px solid white; \
 }').appendTo('head');
 
 $('#voiceread').click(function() {
@@ -49,7 +67,14 @@ $('#voiceread').click(function() {
   $('#text').empty();
   wordElements = [];
   currentWord = 0;
+<<<<<<< HEAD
+  utterance && utterance.cancel();
+=======
+  playing = true;
+  $('#controls').removeClass('play');
+  $('#controls').addClass('pause');
   speechSynthesis.cancel();
+>>>>>>> c32a639b53d60ae27012d3944c0b3d7269fd7048
 });
 
 $('#text').click(function(e) {
@@ -60,6 +85,7 @@ var voices = [];
 var wordElements = [];
 var currentWord = 0;
 var utterance = null;
+var playing = true;
 
 function openHighlightedText(text) {
   if (text) {
@@ -81,6 +107,9 @@ function openHighlightedText(text) {
     speechSynthesis.speak(utterance);
     var currentPosition = 0;
     var interval = setInterval(function(){
+      if (!playing) {
+        return;
+      }
       if (wordElements[currentWord]) {
         currentPosition += .075 + (wordElements[currentWord][0].offsetTop - currentPosition)*.0025*speechRate;        
         $('#text')[0].scrollTop = currentPosition;
@@ -113,3 +142,22 @@ $(document).keydown(function(e) {
     openHighlightedText(text);
   }
 });
+
+$('#controls').click(function(e) {
+    togglePlaying();
+    return false;
+});
+
+function togglePlaying(){
+  if (playing){
+    speechSynthesis.pause();
+    $('#controls').removeClass('pause');
+    $('#controls').addClass('play');
+    playing = false;
+  } else{
+    speechSynthesis.resume();
+    $('#controls').removeClass('play');
+    $('#controls').addClass('pause');
+    playing = true;
+  }
+};
