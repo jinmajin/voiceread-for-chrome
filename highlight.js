@@ -46,7 +46,7 @@ $('#voiceread').click(function() {
   $('#text').empty();
   wordElements = [];
   currentWord = 0;
-  utterance && utterance.stop();
+  utterance && utterance.cancel();
 });
 
 $('#text').click(function(e) {
