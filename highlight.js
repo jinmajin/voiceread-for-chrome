@@ -67,6 +67,7 @@ $('#voiceread').click(function() {
   $('#text').empty();
   wordElements = [];
   currentWord = 0;
+  playing = true;
   speechSynthesis.cancel();
 });
 
@@ -78,6 +79,7 @@ var voices = [];
 var wordElements = [];
 var currentWord = 0;
 var utterance = null;
+var playing = false;
 
 function openHighlightedText(text) {
   if (text) {
@@ -131,3 +133,17 @@ $(document).keydown(function(e) {
     openHighlightedText(text);
   }
 });
+
+$('#text').click(function(e) {
+    togglePlaying();
+});
+
+function togglePlaying(){
+  if (playing){
+    speechSynthesis.pause();
+    playing = false;
+  }else{
+    speechSynthesis.resume();
+    playing = true;
+  }
+};
