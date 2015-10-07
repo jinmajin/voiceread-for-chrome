@@ -134,16 +134,21 @@ $(document).keydown(function(e) {
   }
 });
 
-$('#text').click(function(e) {
+$('#controls').click(function(e) {
     togglePlaying();
+    return false;
 });
 
 function togglePlaying(){
   if (playing){
     speechSynthesis.pause();
+    $('#controls').removeClass('play');
+    $('#controls').addClass('pause');
     playing = false;
   }else{
     speechSynthesis.resume();
+    $('#controls').addClass('play');
+    $('#controls').removeClass('pause');
     playing = true;
   }
 };
