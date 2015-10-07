@@ -27,7 +27,7 @@ $('<style>').prop('type', 'text/css').html(' \
   letter-spacing: ' + charSpace + 'px; \
   left: 0px; \
   position: fixed; \
-  text-align: center; \
+  text-align: left; \
   top: 0px; \
   width: 100%; \
   z-index: 40000000; \
