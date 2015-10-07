@@ -16,7 +16,7 @@ speechRate = speechRate/200; // in ratio
 
 var opacity = .7;
 
-$('body').prepend('<div id="voiceread"><div id="text"></div></div>');
+$('body').prepend('<div id="voiceread"><div id="text"></div><div id="controls" class="pause"></div></div>');
 $('<style>').prop('type', 'text/css').html(' \
 #voiceread { \
   background-color: rgba(0,0,0,' + opacity + '); \
@@ -42,6 +42,24 @@ $('<style>').prop('type', 'text/css').html(' \
 } \
 .highlighted { \
   background-color: ' + highlightColor + '; \
+} \
+#controls { \
+  position: absolute; \
+  bottom: 10px; \
+  left: 20px; \
+} \
+.play { \
+  width: 0; \
+  height: 0; \
+  border-top: 50px solid transparent; \
+  border-bottom: 50px solid transparent; \
+  border-left: 75px solid white; \
+} \
+.pause { \
+  width: 50px; \
+  height: 50px; \
+  border-left: 20px solid white; \
+  border-right: 20px solid white; \
 }').appendTo('head');
 
 $('#voiceread').click(function() {
