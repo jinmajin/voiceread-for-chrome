@@ -6,8 +6,7 @@
   "version": "1.0",
 
   "browser_action": {
-    "default_icon": "icon.png",
-    "default_popup": "settings.html"
+    "default_icon": "icon.png"
   },
 
   "options_page": "settings.html",
@@ -16,8 +15,8 @@
     {
         "matches": ["<all_urls>"],
       "js": [
-        "jquery.min.js",
-        "highlight.js"
+        "js/jquery.min.js",
+        "js/highlight.js"
       ]
     }
   ], 
@@ -25,6 +24,7 @@
     "http://*/*",
     "https://*/*",
     "contextMenus",
-    "tabs"
+    "tabs",
+    "storage"
   ]
 }
