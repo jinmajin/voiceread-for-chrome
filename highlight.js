@@ -11,12 +11,15 @@ var fontColor = '#DDD';
 var highlightColor = 'blue';
 
 var triggerKey = 'r';
-var speechRate = 2.0;
+var speechRate = 300; // in wpm
+speechRate = 200/speechRate; // in ratio
+
+var opacity = .7;
 
 $('body').prepend('<div id="voiceread"><div id="text"></div></div>');
 $('<style>').prop('type', 'text/css').html(' \
 #voiceread { \
-  background-color: rgba(0,0,0,.7); \
+  background-color: rgba(0,0,0,' + opacity + '); \
   color: ' + fontColor + '; \
   display: none; \
   font-family: "' + font + '", "Segoe UI", "Lucida Grande", Tahoma, sans-serif; \
