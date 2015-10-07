@@ -68,6 +68,8 @@ $('#voiceread').click(function() {
   wordElements = [];
   currentWord = 0;
   playing = true;
+  $('#controls').removeClass('play');
+  $('#controls').addClass('pause');
   speechSynthesis.cancel();
 });
 
@@ -101,7 +103,10 @@ function openHighlightedText(text) {
     speechSynthesis.speak(utterance);
     var currentPosition = 0;
     var interval = setInterval(function(){
-      if (wordElements[currentWord] && playing) {
+      if (!playing) {
+        return;
+      }
+      if (wordElements[currentWord]) {
         currentPosition += .075 + (wordElements[currentWord][0].offsetTop - currentPosition)*.0025*speechRate;        
         $('#text')[0].scrollTop = currentPosition;
       } else {
