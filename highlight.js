@@ -49,7 +49,7 @@ $('#voiceread').click(function() {
   $('#text').empty();
   wordElements = [];
   currentWord = 0;
-  utterance && utterance.cancel();
+  speechSynthesis.cancel();
 });
 
 $('#text').click(function(e) {
