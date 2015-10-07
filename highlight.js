@@ -56,10 +56,10 @@ $('<style>').prop('type', 'text/css').html(' \
   border-left: 75px solid white; \
 } \
 .pause { \
-  width: 50px; \
-  height: 50px; \
-  border-left: 20px solid white; \
-  border-right: 20px solid white; \
+  width: 30px; \
+  height: 85px; \
+  border-left: 30px solid white; \
+  border-right: 30px solid white; \
 }').appendTo('head');
 
 $('#voiceread').click(function() {
@@ -79,7 +79,7 @@ var voices = [];
 var wordElements = [];
 var currentWord = 0;
 var utterance = null;
-var playing = false;
+var playing = true;
 
 function openHighlightedText(text) {
   if (text) {
@@ -101,7 +101,7 @@ function openHighlightedText(text) {
     speechSynthesis.speak(utterance);
     var currentPosition = 0;
     var interval = setInterval(function(){
-      if (wordElements[currentWord]) {
+      if (wordElements[currentWord] && playing) {
         currentPosition += .075 + (wordElements[currentWord][0].offsetTop - currentPosition)*.0025*speechRate;        
         $('#text')[0].scrollTop = currentPosition;
       } else {
@@ -142,13 +142,13 @@ $('#controls').click(function(e) {
 function togglePlaying(){
   if (playing){
     speechSynthesis.pause();
+    $('#controls').removeClass('pause');
+    $('#controls').addClass('play');
+    playing = false;
+  } else{
+    speechSynthesis.resume();
     $('#controls').removeClass('play');
     $('#controls').addClass('pause');
-    playing = false;
-  }else{
-    speechSynthesis.resume();
-    $('#controls').addClass('play');
-    $('#controls').removeClass('pause');
     playing = true;
   }
 };
