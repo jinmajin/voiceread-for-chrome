@@ -12,7 +12,7 @@ var highlightColor = 'blue';
 
 var triggerKey = 'r';
 var speechRate = 300; // in wpm
-speechRate = 200/speechRate; // in ratio
+speechRate = speechRate/200; // in ratio
 
 var opacity = .7;
 
