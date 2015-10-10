@@ -91,7 +91,6 @@ chrome.storage.sync.get([
     $('#text').empty();
     wordElements = [];
     currentWord = 0;
-    utterance && utterance.cancel();
     playing = true;
     $('#controls').removeClass('play');
     $('#controls').addClass('pause');
