@@ -1,13 +1,13 @@
 // Saves options to chrome.storage
 function save_options() {
-  var page_width = document.getElementById('page_width').value;
-  var char_spacing = document.getElementById('char_spacing').value;
-  var line_spacing = document.getElementById('line_spacing').value;
-  var font_size = document.getElementById('font_size').value;
-  var font_color = document.getElementById('font_color').value;
-  var background_color = document.getElementById('background_color').value;
-  var highlight_color = document.getElementById('highlight_color').value;
-  var speech_rate = document.getElementById('speech_rate').value;
+  var page_width = $('#page_width').val();
+  var char_spacing = $('#char_spacing').val();
+  var line_spacing = $('#line_spacing').val();
+  var font_size = $('#font_size').val();
+  var font_color = $('#font_color').val();
+  var background_color = $('#background_color').val();
+  var highlight_color = $('#highlight_color').val();
+  var speech_rate = $('#speech_rate').val();
   chrome.storage.sync.set({
     pageWidth: page_width,
     charSpacing: char_spacing,
@@ -19,7 +19,7 @@ function save_options() {
     speechRate: speech_rate
   }, function() {
     // Update status to let user know options were saved.
-    var status = document.getElementById('status');
+    var status = $('#status');
     status.textContent = 'Options saved.';
     setTimeout(function() {
       status.textContent = '';
@@ -34,23 +34,27 @@ function restore_options() {
     charSpacing: 5,
     lineSpacing: 10,
     fontSize: 50,
-    fontColor: "#DDDDDD",
-    backgroundColor: "#222222",
+    fontColor: "#DDD",
+    backgroundColor: "#222",
     highlightColor: "#0000FF",
     speechRate: 300
   }, function(settings) {
-    document.getElementById('page_width').value = settings.pageWidth;
-    document.getElementById('char_spacing').value = settings.charSpacing;
-    document.getElementById('line_spacing').value = settings.lineSpacing;
-    document.getElementById('font_size').value = settings.fontSize;
-    document.getElementById('font_color').value = settings.fontColor;
-    document.getElementById('background_color').value = settings.backgroundColor;
-    document.getElementById('highlight_color').value = settings.highlightColor;
-    document.getElementById('speech_rate').value = settings.speechRate;
+    $('#page_width').val(settings.pageWidth);
+    $('#char_spacing').val(settings.charSpacing);
+    $('#line_spacing').val(settings.lineSpacing);
+    $('#font_size').val(settings.fontSize);
+    $('#font_color').val(settings.fontColor);
+    $('#background_color').val(settings.backgroundColor);
+    $('#highlight_color').val(settings.highlightColor);
+    $('#speech_rate').val(settings.speechRate);
+    $('#speech_rate_value').html($('#speech_rate').val() + 'wpm');
   });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('save').addEventListener('click', save_options);
+  $('#save').click(save_options);
   restore_options();
+  $('#speech_rate').on('input', function() {
+    $('#speech_rate_value').html($('#speech_rate').val() + 'wpm');
+  });
 });

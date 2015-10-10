@@ -3,6 +3,7 @@
   <head>
 
     <title>VoiceRead Settings</title>
+    <script src="js/jquery.min.js"></script>
     <script src="js/settings.js"></script>
 
   </head>
@@ -29,7 +30,8 @@
     <h2>Audio Settings</h2>
     <form>
       Speech Rate:
-      <input id="speech_rate" type="range" name="speech_rate_points" min="100" max="500" value="300"><br>
+      <input id="speech_rate" type="range" name="speech_rate_points" min="100" max="600" value="500">
+      <span id="speech_rate_value">500wpm</span>
     </form>
 
     <div id="status"></div>

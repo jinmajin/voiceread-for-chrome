@@ -28,14 +28,16 @@ chrome.storage.sync.get([
   'speechRate'
 ], function(settings) {
   if (Object.keys(settings).length > 0) {
-    // width = settings.pageWidth;
-    // charSpace = settings.charSpacing;
-    // lineSpace = settings.lineSpacing;
-    // fontSize = settings.fontSize;
-    // fontColor = settings.fontColor;
-    // backgroundColor = settings.backgroundColor;
+    console.log(parseInt(settings.pageWidth));
+    console.log(500 + parseInt(settings.pageWidth));
+    width = 500 + parseInt(settings.pageWidth);
+    charSpace = settings.charSpacing;
+    lineSpace = settings.lineSpacing;
+    fontSize = settings.fontSize;
+    fontColor = settings.fontColor;
+    backgroundColor = settings.backgroundColor;
     highlightColor = settings.highlightColor;
-    // speechRate = settings.speechRate/200;
+    speechRate = settings.speechRate/200;
   } 
   $('body').prepend('<div id="voiceread"><div id="text"></div><div id="controls" class="pause"></div></div>');
   $('<style>').prop('type', 'text/css').html(' \
@@ -57,7 +59,7 @@ chrome.storage.sync.get([
     background-color: ' + backgroundColor + '; \
     width: ' + width + 'px; \
     height: ' + height + 'px; \
-    line-height: ' + (fontSize + lineSpace) + 'px; \
+    line-height: ' + (parseInt(fontSize) + parseInt(lineSpace)) + 'px; \
     overflow-y: hidden; \
     margin: auto; \
   } \
@@ -77,10 +79,11 @@ chrome.storage.sync.get([
     border-left: 75px solid white; \
   } \
   .pause { \
-    width: 30px; \
+    width: 85px; \
     height: 85px; \
     border-left: 30px solid white; \
     border-right: 30px solid white; \
+    box-sizing: border-box; \
   }').appendTo('head');
 
   $('#voiceread').click(function() {
