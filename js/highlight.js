@@ -67,14 +67,11 @@ $('#voiceread').click(function() {
   $('#text').empty();
   wordElements = [];
   currentWord = 0;
-<<<<<<< HEAD
   utterance && utterance.cancel();
-=======
   playing = true;
   $('#controls').removeClass('play');
   $('#controls').addClass('pause');
   speechSynthesis.cancel();
->>>>>>> c32a639b53d60ae27012d3944c0b3d7269fd7048
 });
 
 $('#text').click(function(e) {
