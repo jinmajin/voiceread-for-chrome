@@ -11,10 +11,10 @@ var fontColor = '#DDD';
 var highlightColor = 'blue';
 
 var triggerKey = 'r';
-var speechRate = 300; // in wpm
+var speechRate = 500; // in wpm
 speechRate = speechRate/200; // in ratio
 
-var opacity = .7;
+var opacity = 1;
 
 chrome.storage.sync.get([
   'pageWidth',
