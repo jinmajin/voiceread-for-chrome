@@ -11,10 +11,10 @@ var fontColor = '#DDD';
 var highlightColor = 'blue';
 
 var triggerKey = 'r';
-var speechRate = 300; // in wpm
+var speechRate = 500; // in wpm
 speechRate = speechRate/200; // in ratio
 
-var opacity = .7;
+var opacity = 1;
 
 $('body').prepend('<div id="voiceread"><div id="text"></div><div id="controls" class="pause"></div></div>');
 $('<style>').prop('type', 'text/css').html(' \
@@ -56,7 +56,7 @@ $('<style>').prop('type', 'text/css').html(' \
   border-left: 75px solid white; \
 } \
 .pause { \
-  width: 30px; \
+  width: 40px; \
   height: 85px; \
   border-left: 30px solid white; \
   border-right: 30px solid white; \
@@ -67,7 +67,6 @@ $('#voiceread').click(function() {
   $('#text').empty();
   wordElements = [];
   currentWord = 0;
-  utterance && utterance.cancel();
   playing = true;
   $('#controls').removeClass('play');
   $('#controls').addClass('pause');
