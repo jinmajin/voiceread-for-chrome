@@ -97,6 +97,10 @@ chrome.storage.sync.get([
     speechSynthesis.cancel();
   });
 
+  $( window ).unload(function() {
+    speechSynthesis.cancel();
+  });
+
   $('#text').click(function(e) {
     return false;
   });
