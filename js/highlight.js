@@ -28,8 +28,6 @@ chrome.storage.sync.get([
   'speechRate'
 ], function(settings) {
   if (Object.keys(settings).length > 0) {
-    console.log(parseInt(settings.pageWidth));
-    console.log(500 + parseInt(settings.pageWidth));
     width = 500 + parseInt(settings.pageWidth);
     charSpace = settings.charSpacing;
     lineSpace = settings.lineSpacing;
@@ -55,7 +53,7 @@ chrome.storage.sync.get([
     width: 100%; \
     z-index: 40000000; \
   } \
-  #text { \
+  #voiceread_text { \
     background-color: ' + backgroundColor + '; \
     width: ' + width + 'px; \
     height: ' + height + 'px; \
@@ -88,7 +86,7 @@ chrome.storage.sync.get([
 
   $('#voiceread').click(function() {
     $('#voiceread').hide();
-    $('#text').empty();
+    $('#voiceread_text').empty();
     wordElements = [];
     currentWord = 0;
     playing = true;
@@ -101,7 +99,7 @@ chrome.storage.sync.get([
     speechSynthesis.cancel();
   });
 
-  $('#text').click(function(e) {
+  $('#voiceread_text').click(function(e) {
     return false;
   });
 
@@ -113,12 +111,12 @@ chrome.storage.sync.get([
 
   function openHighlightedText(text) {
     if (text) {
-      $('#text').empty();
+      $('#voiceread_text').empty();
       var words = text.split(/\s+/);
       for(var i = 0; i < words.length; i++) {
         var word = $('<span />').attr('className', 'word').html(words[i]);
-        $('#text').append(word);
-        $('#text').append(' ');
+        $('#voiceread_text').append(word);
+        $('#voiceread_text').append(' ');
         wordElements.push(word);
       }
       utterance = new SpeechSynthesisUtterance(text);
@@ -136,7 +134,7 @@ chrome.storage.sync.get([
         }
         if (wordElements[currentWord]) {
           currentPosition += .075 + (wordElements[currentWord][0].offsetTop - currentPosition)*.0025*speechRate;        
-          $('#text')[0].scrollTop = currentPosition;
+          $('#voiceread_text')[0].scrollTop = currentPosition;
         } else {
           clearInterval(interval);
         }
