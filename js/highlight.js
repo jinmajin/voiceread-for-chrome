@@ -39,7 +39,7 @@ chrome.storage.sync.get([
     highlightColor = settings.highlightColor;
     speechRate = settings.speechRate/200;
   } 
-  $('body').prepend('<div id="voiceread"><div id="text"></div><div id="controls" class="pause"></div></div>');
+  $('body').prepend('<div id="voiceread"><div id="voiceread_text"></div><div id="controls" class="pause"></div></div>');
   $('<style>').prop('type', 'text/css').html(' \
   #voiceread { \
     background-color: rgba(0,0,0,' + opacity + '); \
