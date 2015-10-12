@@ -132,7 +132,7 @@ chrome.storage.sync.get([
         if (!playing) {
           return;
         }
-        if (wordElements[currentWord]) {
+        if (currentWord < wordElements.length - 1) {
           currentPosition += .075 + (wordElements[currentWord][0].offsetTop - currentPosition)*.0025*speechRate;        
           $('#voiceread_text')[0].scrollTop = currentPosition;
         } else {
