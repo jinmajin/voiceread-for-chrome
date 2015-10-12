@@ -1,4 +1,4 @@
-var height = $(window).height();
+var height = window.innerHeight;
 var width = 600;
 
 var backgroundColor = '#222';
