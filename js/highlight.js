@@ -20,7 +20,7 @@ chrome.storage.sync.get([
   'pageWidth',
   'charSpacing',
   'highlightColor',
-  'lineSpacing', 
+  'lineSpacing',
   'fontSize',
   'fontColor',
   'backgroundColor',    
@@ -89,6 +89,7 @@ chrome.storage.sync.get([
     $('#voiceread_text').empty();
     wordElements = [];
     currentWord = 0;
+    previousWord = 0;
     playing = true;
     $('#controls').removeClass('play');
     $('#controls').addClass('pause');
@@ -106,22 +107,42 @@ chrome.storage.sync.get([
   var voices = [];
   var wordElements = [];
   var currentWord = 0;
+  var previousWord = 0;
   var utterance = null;
   var playing = true;
+  var words = [];
+
+  function rewind(evt) {
+    var index = ($(evt.target).attr('word'));
+    speechSynthesis.cancel();
+    currentWord = parseInt(index);
+    highlightWord();
+    utterance = new SpeechSynthesisUtterance(words.slice(index, words.length).join(" "));
+    utterance.rate = speechRate;
+    utterance.onboundary = incrementWord;
+    if (voices.length > 0) {
+      utterance.voice = voices.filter(function(voice) {return voice.name == 'Karen'})[0];
+    }
+    speechSynthesis.speak(utterance);
+    if (!playing) {
+      speechSynthesis.pause();
+    }
+  }
 
   function openHighlightedText(text) {
     if (text) {
       $('#voiceread_text').empty();
-      var words = text.split(/\s+/);
+      words = text.split(/\s+/);
       for(var i = 0; i < words.length; i++) {
-        var word = $('<span />').attr('className', 'word').html(words[i]);
+        var word = $('<span />').attr('word', i).html(words[i]);
         $('#voiceread_text').append(word);
         $('#voiceread_text').append(' ');
         wordElements.push(word);
+        word.on('click', rewind);
       }
       utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = speechRate;
-      utterance.onboundary = highlightWord;
+      utterance.onboundary = incrementWord;
       if (voices.length > 0) {
         utterance.voice = voices.filter(function(voice) {return voice.name == 'Karen'})[0];
       }
@@ -143,10 +164,13 @@ chrome.storage.sync.get([
   }
 
   function highlightWord() {
-    if (currentWord != 0) {
-      wordElements[currentWord - 1].removeClass('highlighted');
-    }
+    wordElements[previousWord].removeClass('highlighted');
     wordElements[currentWord].addClass('highlighted');
+  }
+
+  function incrementWord() {
+    highlightWord();
+    previousWord = currentWord;
     currentWord++;
   }
 
