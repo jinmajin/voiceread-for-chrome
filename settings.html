@@ -1,27 +1,41 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>EXAMPLE SETTINGS PAGE</title>
-  <script src="settings.js"></script>
-</head>
-<body>
-  EXAMPLE SETTINGS PAGE
+  <head>
 
-  Favorite color:
-  <select id="color">
-   <option value="red">red</option>
-   <option value="green">green</option>
-   <option value="blue">blue</option>
-   <option value="yellow">yellow</option>
- </select>
+    <title>VoiceRead Settings</title>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/settings.js"></script>
 
- <label>
-  <input type="checkbox" id="like">
-  I like colors.
-</label>
+  </head>
+  <body>
 
-<div id="status"></div>
-<button id="save">Save</button>
+    <h2>Visual Settings</h2>
+    <form>
+      Width:
+      <input id="page_width" type="number" name="width_points" min="0" max="100" step="10" value="40"><br>
+      Character Spacing:
+      <input id="char_spacing" type="number" name="char_spacing_points" min="0" max="10" step="1" value="5"><br>
+      Line Spacing:
+      <input id="line_spacing" type="number" name="line_spacing_points" min="0" max="50" step="1" value="10"><br>
+      Font Size:
+      <input id="font_size" type="number" name="font_size_points" min="0" max="100" step="1" value="50"><br>
+      Font Color:
+      <input id="font_color" type="color" name="font_color_value" value="#DDDDDD"><br>
+      Background Color:
+      <input id="background_color" type="color" name="background_color_value" value="#222222"><br>
+      Highlight Color:
+      <input id="highlight_color" type="color" name="highlight_color_value" value="#0000FF"><br>
+    </form>
 
-</body>
+    <h2>Audio Settings</h2>
+    <form>
+      Speech Rate:
+      <input id="speech_rate" type="range" name="speech_rate_points" min="100" max="600" value="500">
+      <span id="speech_rate_value">500wpm</span>
+    </form>
+
+    <div id="status"></div>
+    <button id="save">Save</button>
+
+  </body>
 </html>
