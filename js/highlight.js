@@ -15,6 +15,7 @@ var speechRate = 500; // in wpm
 speechRate = speechRate/200; // in ratio
 
 var opacity = 1;
+var currentPosition = 0;
 
 chrome.storage.sync.get([
   'pageWidth',
@@ -58,7 +59,7 @@ chrome.storage.sync.get([
     width: ' + width + 'px; \
     height: ' + height + 'px; \
     line-height: ' + (parseInt(fontSize) + parseInt(lineSpace)) + 'px; \
-    overflow-y: hidden; \
+    overflow-y: scroll; \
     margin: auto; \
   } \
   .highlighted { \
@@ -123,9 +124,10 @@ chrome.storage.sync.get([
     if (voices.length > 0) {
       utterance.voice = voices.filter(function(voice) {return voice.name == 'Karen'})[0];
     }
+    currentPosition = $('#voiceread_text')[0].scrollTop;
     speechSynthesis.speak(utterance);
     if (!playing) {
-      speechSynthesis.pause();
+      togglePlaying();
     }
   }
 
@@ -148,7 +150,6 @@ chrome.storage.sync.get([
       }
       $('#voiceread').show();
       speechSynthesis.speak(utterance);
-      var currentPosition = 0;
       var interval = setInterval(function(){
         if (!playing) {
           return;
@@ -156,8 +157,6 @@ chrome.storage.sync.get([
         if (currentWord < wordElements.length - 1) {
           currentPosition += .075 + (wordElements[currentWord][0].offsetTop - currentPosition)*.0025*speechRate;        
           $('#voiceread_text')[0].scrollTop = currentPosition;
-        } else {
-          clearInterval(interval);
         }
       }, 10);
     }
@@ -186,6 +185,12 @@ chrome.storage.sync.get([
     if (e.ctrlKey && (String.fromCharCode(e.which) === triggerKey || String.fromCharCode(e.which) === triggerKey.toUpperCase())) {
       var text = window.getSelection().toString();
       openHighlightedText(text);
+    }
+  });
+
+  $('#voiceread').bind('mousewheel', function(event) {
+    if (event.originalEvent.wheelDelta >= 0 && playing) {
+      togglePlaying();
     }
   });
 
