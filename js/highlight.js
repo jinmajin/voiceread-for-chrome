@@ -91,7 +91,9 @@ chrome.storage.sync.get([
     wordElements = [];
     currentWord = 0;
     previousWord = 0;
+    currentPosition = 0;
     playing = true;
+    clearInterval(interval);
     $('#controls').removeClass('play');
     $('#controls').addClass('pause');
     speechSynthesis.cancel();
@@ -112,6 +114,7 @@ chrome.storage.sync.get([
   var utterance = null;
   var playing = true;
   var words = [];
+  var interval;
 
   function rewind(evt) {
     var index = ($(evt.target).attr('word'));
@@ -150,7 +153,7 @@ chrome.storage.sync.get([
       }
       $('#voiceread').show();
       speechSynthesis.speak(utterance);
-      var interval = setInterval(function(){
+      interval = setInterval(function(){
         if (!playing) {
           return;
         }
