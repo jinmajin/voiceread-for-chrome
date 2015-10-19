@@ -15,12 +15,13 @@ var speechRate = 500; // in wpm
 speechRate = speechRate/200; // in ratio
 
 var opacity = 1;
+var currentPosition = 0;
 
 chrome.storage.sync.get([
   'pageWidth',
   'charSpacing',
   'highlightColor',
-  'lineSpacing', 
+  'lineSpacing',
   'fontSize',
   'fontColor',
   'backgroundColor',    
@@ -58,7 +59,7 @@ chrome.storage.sync.get([
     width: ' + width + 'px; \
     height: ' + height + 'px; \
     line-height: ' + (parseInt(fontSize) + parseInt(lineSpace)) + 'px; \
-    overflow-y: hidden; \
+    overflow-y: scroll; \
     margin: auto; \
   } \
   .highlighted { \
@@ -89,7 +90,10 @@ chrome.storage.sync.get([
     $('#voiceread_text').empty();
     wordElements = [];
     currentWord = 0;
+    previousWord = 0;
+    currentPosition = 0;
     playing = true;
+    clearInterval(interval);
     $('#controls').removeClass('play');
     $('#controls').addClass('pause');
     speechSynthesis.cancel();
@@ -106,47 +110,69 @@ chrome.storage.sync.get([
   var voices = [];
   var wordElements = [];
   var currentWord = 0;
+  var previousWord = 0;
   var utterance = null;
   var playing = true;
+  var words = [];
+  var interval;
+
+  function rewind(evt) {
+    var index = ($(evt.target).attr('word'));
+    speechSynthesis.cancel();
+    currentWord = parseInt(index);
+    highlightWord();
+    utterance = new SpeechSynthesisUtterance(words.slice(index, words.length).join(" "));
+    utterance.rate = speechRate;
+    utterance.onboundary = incrementWord;
+    if (voices.length > 0) {
+      utterance.voice = voices.filter(function(voice) {return voice.name == 'Karen'})[0];
+    }
+    currentPosition = $('#voiceread_text')[0].scrollTop;
+    speechSynthesis.speak(utterance);
+    if (!playing) {
+      togglePlaying();
+    }
+  }
 
   function openHighlightedText(text) {
     if (text) {
       $('#voiceread_text').empty();
-      var words = text.split(/\s+/);
+      words = text.split(/\s+/);
       for(var i = 0; i < words.length; i++) {
-        var word = $('<span />').attr('className', 'word').html(words[i]);
+        var word = $('<span />').attr('word', i).html(words[i]);
         $('#voiceread_text').append(word);
         $('#voiceread_text').append(' ');
         wordElements.push(word);
+        word.on('click', rewind);
       }
       utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = speechRate;
-      utterance.onboundary = highlightWord;
+      utterance.onboundary = incrementWord;
       if (voices.length > 0) {
         utterance.voice = voices.filter(function(voice) {return voice.name == 'Karen'})[0];
       }
       $('#voiceread').show();
       speechSynthesis.speak(utterance);
-      var currentPosition = 0;
-      var interval = setInterval(function(){
+      interval = setInterval(function(){
         if (!playing) {
           return;
         }
         if (currentWord < wordElements.length - 1) {
           currentPosition += .075 + (wordElements[currentWord][0].offsetTop - currentPosition)*.0025*speechRate;        
           $('#voiceread_text')[0].scrollTop = currentPosition;
-        } else {
-          clearInterval(interval);
         }
       }, 10);
     }
   }
 
   function highlightWord() {
-    if (currentWord != 0) {
-      wordElements[currentWord - 1].removeClass('highlighted');
-    }
+    wordElements[previousWord].removeClass('highlighted');
     wordElements[currentWord].addClass('highlighted');
+  }
+
+  function incrementWord() {
+    highlightWord();
+    previousWord = currentWord;
     currentWord++;
   }
 
@@ -162,6 +188,12 @@ chrome.storage.sync.get([
     if (e.ctrlKey && (String.fromCharCode(e.which) === triggerKey || String.fromCharCode(e.which) === triggerKey.toUpperCase())) {
       var text = window.getSelection().toString();
       openHighlightedText(text);
+    }
+  });
+
+  $('#voiceread').bind('mousewheel', function(event) {
+    if (event.originalEvent.wheelDelta >= 0 && playing) {
+      togglePlaying();
     }
   });
 
