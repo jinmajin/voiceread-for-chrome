@@ -61,6 +61,7 @@ chrome.storage.sync.get([
     line-height: ' + (parseInt(fontSize) + parseInt(lineSpace)) + 'px; \
     overflow-y: scroll; \
     margin: auto; \
+    word-wrap: break-word; \
   } \
   .highlighted { \
     background-color: ' + highlightColor + '; \
@@ -158,7 +159,7 @@ chrome.storage.sync.get([
           return;
         }
         if (currentWord < wordElements.length - 1) {
-          currentPosition += .075 + (wordElements[currentWord][0].offsetTop - currentPosition)*.0025*speechRate;        
+          currentPosition += (.075 + (wordElements[currentWord][0].offsetTop + $(wordElements[currentWord]).height() - currentPosition)*.0025*speechRate)*(fontSize/50) + .0075*(lineSpace/10 + (600-width));    
           $('#voiceread_text')[0].scrollTop = currentPosition;
         }
       }, 10);
