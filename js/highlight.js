@@ -39,50 +39,85 @@ chrome.storage.sync.get([
     speechRate = settings.speechRate/200;
   } 
   $('body').prepend('<div id="voiceread"><div id="voiceread_text"></div><div id="controls" class="pause"></div></div>');
+  $('body').append('<div id="settings"> \
+    <h2>Visual Settings</h2> \
+    <form> \
+      Width: \
+      <input id="page_width" type="number" name="width_points" min="0" max="100" step="10" value="40"><br> \
+      Character Spacing: \
+      <input id="char_spacing" type="number" name="char_spacing_points" min="0" max="10" step="1" value="5"><br> \
+      Line Spacing: \
+      <input id="line_spacing" type="number" name="line_spacing_points" min="0" max="50" step="1" value="10"><br> \
+      Font Size: \
+      <input id="font_size" type="number" name="font_size_points" min="0" max="100" step="1" value="50"><br> \
+      Font Color: \
+      <input id="font_color" type="color" name="font_color_value" value="#DDDDDD"><br> \
+      Background Color: \
+      <input id="background_color" type="color" name="background_color_value" value="#222222"><br> \
+      Highlight Color: \
+      <input id="highlight_color" type="color" name="highlight_color_value" value="#0000FF"><br> \
+    </form> \
+    <h2>Audio Settings</h2> \
+    <form> \
+      Speech Rate: \
+      <input id="speech_rate" type="range" name="speech_rate_points" min="100" max="600" value="500"> \
+      <span id="speech_rate_value">500wpm</span> \
+    </form> \
+    <div id="status"></div> \
+    <button id="save">Save</button> \
+  </div>');
   $('<style>').prop('type', 'text/css').html(' \
-  #voiceread { \
-    background-color: rgba(0,0,0,' + opacity + '); \
-    color: ' + fontColor + '; \
-    display: none; \
-    font-family: "' + font + '", "Segoe UI", "Lucida Grande", Tahoma, sans-serif; \
-    font-size: ' + fontSize + 'px; \
-    letter-spacing: ' + charSpace + 'px; \
-    left: 0px; \
-    position: fixed; \
-    text-align: left; \
-    top: 0px; \
-    width: 100%; \
-    z-index: 40000000; \
-  } \
-  #voiceread_text { \
-    background-color: ' + backgroundColor + '; \
-    width: ' + width + 'px; \
-    height: ' + height + 'px; \
-    line-height: ' + (parseInt(fontSize) + parseInt(lineSpace)) + 'px; \
-    overflow-y: scroll; \
-    margin: auto; \
-  } \
-  .highlighted { \
-    background-color: ' + highlightColor + '; \
-  } \
-  #controls { \
-    position: absolute; \
-    bottom: 10px; \
-    left: 20px; \
-  } \
-  .play { \
-    width: 0; \
-    height: 0; \
-    border-top: 50px solid transparent; \
-    border-bottom: 50px solid transparent; \
-    border-left: 75px solid white; \
-  } \
-  .pause { \
-    width: 85px; \
-    height: 85px; \
-    border-left: 30px solid white; \
-    border-right: 30px solid white; \
-    box-sizing: border-box; \
+    #settings { \
+      position: absolute; \
+      right: -20%; \
+      background-color: white; \
+      opacity: 0;
+      z-index: 1000001; \
+    } \
+    #voiceread { \
+      background-color: rgba(0,0,0,' + opacity + '); \
+      color: ' + fontColor + '; \
+      display: none; \
+      font-family: "' + font + '", "Segoe UI", "Lucida Grande", Tahoma, sans-serif; \
+      font-size: ' + fontSize + 'px; \
+      letter-spacing: ' + charSpace + 'px; \
+      float: left; \
+      left: 0px; \
+      position: absolute; \
+      text-align: left; \
+      top: 0px; \
+      width: 100%; \
+      z-index: 1000000; \
+    } \
+    #voiceread_text { \
+      background-color: ' + backgroundColor + '; \
+      width: ' + width + 'px; \
+      height: ' + height + 'px; \
+      line-height: ' + (parseInt(fontSize) + parseInt(lineSpace)) + 'px; \
+      overflow-y: scroll; \
+      margin: auto; \
+    } \
+    .highlighted { \
+      background-color: ' + highlightColor + '; \
+    } \
+    #controls { \
+      position: absolute; \
+      bottom: 10px; \
+      left: 20px; \
+    } \
+    .play { \
+      width: 0; \
+      height: 0; \
+      border-top: 50px solid transparent; \
+      border-bottom: 50px solid transparent; \
+      border-left: 75px solid white; \
+    } \
+    .pause { \
+      width: 85px; \
+      height: 85px; \
+      border-left: 30px solid white; \
+      border-right: 30px solid white; \
+      box-sizing: border-box; \
   }').appendTo('head');
 
   $('#voiceread').click(function() {
@@ -188,6 +223,14 @@ chrome.storage.sync.get([
     if (String.fromCharCode(e.which) === triggerKey || String.fromCharCode(e.which) === triggerKey.toUpperCase()) {
       var text = window.getSelection().toString();
       openHighlightedText(text);
+    } 
+    if (String.fromCharCode(e.which) === 's' || String.fromCharCode(e.which) === 's'.toUpperCase()) {
+      $( "#settings" ).animate({
+        right: "0",
+        width: "20%",
+        height: height + "px",
+        opacity: 1
+      }, 1000 );
     }
   });
 

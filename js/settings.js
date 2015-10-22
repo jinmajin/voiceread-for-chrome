@@ -51,6 +51,69 @@ function restore_options() {
   });
 }
 
+// var height = $(window).height();
+// var width = 600;
+
+// var backgroundColor = '#222';
+// var charSpace = 5;
+// var lineSpace = 10;
+
+// var font = "Avenir Next";
+// var fontSize = 50;
+// var fontColor = '#DDD';
+// var highlightColor = 'blue';
+
+// var triggerKey = 'u';
+// var speechRate = 300; // in wpm
+// speechRate = speechRate/200; // in ratio
+
+// var opacity = .7;
+
+// $('<style>').prop('type', 'text/css').html(' \
+// #voiceread { \
+//   background-color: rgba(0,0,0,' + opacity + '); \
+//   color: ' + fontColor + '; \
+//   display: none; \
+//   font-family: "' + font + '", "Segoe UI", "Lucida Grande", Tahoma, sans-serif; \
+//   font-size: ' + fontSize + 'px; \
+//   letter-spacing: ' + charSpace + 'px; \
+//   left: 0px; \
+//   position: fixed; \
+//   text-align: left; \
+//   top: 0px; \
+//   width: 100%; \
+//   z-index: 40000000; \
+// } \
+// #text { \
+//   background-color: ' + backgroundColor + '; \
+//   width: ' + width + 'px; \
+//   height: ' + height + 'px; \
+//   line-height: ' + (fontSize + lineSpace) + 'px; \
+//   overflow-y: hidden; \
+//   margin: auto; \
+// } \
+// .highlighted { \
+//   background-color: ' + highlightColor + '; \
+// } \
+// #controls { \
+//   position: absolute; \
+//   bottom: 10px; \
+//   left: 20px; \
+// } \
+// .play { \
+//   width: 0; \
+//   height: 0; \
+//   border-top: 50px solid transparent; \
+//   border-bottom: 50px solid transparent; \
+//   border-left: 75px solid white; \
+// } \
+// .pause { \
+//   width: 50px; \
+//   height: 50px; \
+//   border-left: 20px solid white; \
+//   border-right: 20px solid white; \
+// }').appendTo('head');
+
 document.addEventListener('DOMContentLoaded', function() {
   $('#save').click(save_options);
   restore_options();

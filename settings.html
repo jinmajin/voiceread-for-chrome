@@ -5,37 +5,45 @@
     <title>VoiceRead Settings</title>
     <script src="js/jquery.min.js"></script>
     <script src="js/settings.js"></script>
-
+<!--     <link rel="stylesheet" type="text/css" href="css/settings.css"> -->
   </head>
   <body>
+    <div id="settings">
+      <h2>Visual Settings</h2>
+      <form>
+        Width:
+        <input id="page_width" type="number" name="width_points" min="0" max="100" step="10" value="40"><br>
+        Character Spacing:
+        <input id="char_spacing" type="number" name="char_spacing_points" min="0" max="10" step="1" value="5"><br>
+        Line Spacing:
+        <input id="line_spacing" type="number" name="line_spacing_points" min="0" max="50" step="1" value="10"><br>
+        Font Size:
+        <input id="font_size" type="number" name="font_size_points" min="0" max="100" step="1" value="50"><br>
+        Font Color:
+        <input id="font_color" type="color" name="font_color_value" value="#DDDDDD"><br>
+        Background Color:
+        <input id="background_color" type="color" name="background_color_value" value="#222222"><br>
+        Highlight Color:
+        <input id="highlight_color" type="color" name="highlight_color_value" value="#0000FF"><br>
+      </form>
 
-    <h2>Visual Settings</h2>
-    <form>
-      Width:
-      <input id="page_width" type="number" name="width_points" min="0" max="100" step="10" value="40"><br>
-      Character Spacing:
-      <input id="char_spacing" type="number" name="char_spacing_points" min="0" max="10" step="1" value="5"><br>
-      Line Spacing:
-      <input id="line_spacing" type="number" name="line_spacing_points" min="0" max="50" step="1" value="10"><br>
-      Font Size:
-      <input id="font_size" type="number" name="font_size_points" min="0" max="100" step="1" value="50"><br>
-      Font Color:
-      <input id="font_color" type="color" name="font_color_value" value="#DDDDDD"><br>
-      Background Color:
-      <input id="background_color" type="color" name="background_color_value" value="#222222"><br>
-      Highlight Color:
-      <input id="highlight_color" type="color" name="highlight_color_value" value="#0000FF"><br>
-    </form>
+      <h2>Audio Settings</h2>
+      <form>
+        Speech Rate:
+        <input id="speech_rate" type="range" name="speech_rate_points" min="100" max="600" value="500">
+        <span id="speech_rate_value">500wpm</span>
+      </form>
 
-    <h2>Audio Settings</h2>
-    <form>
-      Speech Rate:
-      <input id="speech_rate" type="range" name="speech_rate_points" min="100" max="600" value="500">
-      <span id="speech_rate_value">500wpm</span>
-    </form>
-
-    <div id="status"></div>
-    <button id="save">Save</button>
+      <div id="status"></div>
+      <button id="save">Save</button>
+    </div>
+<!--     <div id="preview">
+      <div id="voiceread" style="display: block;">
+        <div id="voiceread_text">
+          <span word="0" class="">Lorem</span> <span word="1" class="">ipsum</span> <span word="2" class="">dolor</span> <span word="3" class="">sit</span> <span word="4" class="">amet,</span> <span word="5" class="">consectetur</span> <span word="6" class="">adipiscing</span> <span word="7" class="">elit.</span> <span word="8" class="">Integer</span> <span word="9" class="">congue,</span> <span word="10" class="">lorem</span> <span word="11" class="">eu</span> <span word="12" class="">bibendum</span> <span word="13" class="">auctor,</span> <span word="14" class="highlighted">magna</span> <span word="15" class="">lectus</span> <span word="16" class="">sodales</span> <span word="17" class="">neque,</span> <span word="18" class="">lobortis</span> <span word="19" class="">vulputate</span> <span word="20" class="">nisl</span> <span word="21" class="">nunc</span> <span word="22" class="">vel</span> <span word="23" class="">tortor.</span> <span word="24" class="">Curabitur</span> <span word="25" class="">facilisis</span> <span word="26" class="">sapien</span> <span word="27" class="">nisi,</span> <span word="28" class="">viverra</span> <span word="29" class="">rhoncus</span> <span word="30" class="">nunc</span> <span word="31" class="">consectetur</span> <span word="32" class="">rhoncus.</span> 
+        </div>
+      </div>
+    </div> -->
 
   </body>
 </html>
