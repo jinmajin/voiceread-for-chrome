@@ -72,6 +72,7 @@ chrome.storage.sync.get([
   $('<style>').prop('type', 'text/css').html(' \
     #container { \
       overflow: hidden; \
+      display: none; \
     } \
     #settings { \
       position: absolute; \
@@ -85,7 +86,6 @@ chrome.storage.sync.get([
     #voiceread { \
       background-color: rgba(0,0,0,' + opacity + '); \
       color: ' + fontColor + '; \
-      display: none; \
       font-family: "' + font + '", "Segoe UI", "Lucida Grande", Tahoma, sans-serif; \
       font-size: ' + fontSize + 'px; \
       letter-spacing: ' + charSpace + 'px; \
@@ -130,7 +130,10 @@ chrome.storage.sync.get([
 
   $('#voiceread').click(function() {
     isVoiceReadActive = false;
-    $('#voiceread').hide();
+    $('#container').hide();
+    if (isSettingsViewActive) {
+      toggleSettingsView();
+    } 
     $('#voiceread_text').empty();
     wordElements = [];
     currentWord = 0;
@@ -195,7 +198,7 @@ chrome.storage.sync.get([
       if (voices.length > 0) {
         utterance.voice = voices.filter(function(voice) {return voice.name == 'Karen'})[0];
       }
-      $('#voiceread').show();
+      $('#container').show();
       isVoiceReadActive = true;
       speechSynthesis.speak(utterance);
       interval = setInterval(function(){
