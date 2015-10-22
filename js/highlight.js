@@ -119,6 +119,52 @@ chrome.storage.sync.get([
       border-right: 30px solid white; \
       box-sizing: border-box; \
   }').appendTo('head');
+// =======
+//   #voiceread { \
+//     background-color: rgba(0,0,0,' + opacity + '); \
+//     color: ' + fontColor + '; \
+//     display: none; \
+//     font-family: "' + font + '", "Segoe UI", "Lucida Grande", Tahoma, sans-serif; \
+//     font-size: ' + fontSize + 'px; \
+//     letter-spacing: ' + charSpace + 'px; \
+//     left: 0px; \
+//     position: fixed; \
+//     text-align: left; \
+//     top: 0px; \
+//     width: 100%; \
+//     z-index: 40000000; \
+//   } \
+//   #voiceread_text { \
+//     background-color: ' + backgroundColor + '; \
+//     width: ' + width + 'px; \
+//     height: ' + height + 'px; \
+//     line-height: ' + (parseInt(fontSize) + parseInt(lineSpace)) + 'px; \
+//     overflow-y: scroll; \
+//     margin: auto; \
+//     word-wrap: break-word; \
+//   } \
+//   .highlighted { \
+//     background-color: ' + highlightColor + '; \
+//   } \
+//   #controls { \
+//     position: absolute; \
+//     bottom: 10px; \
+//     left: 20px; \
+//   } \
+//   .play { \
+//     width: 0; \
+//     height: 0; \
+//     border-top: 50px solid transparent; \
+//     border-bottom: 50px solid transparent; \
+//     border-left: 75px solid white; \
+//   } \
+//   .pause { \
+//     width: 85px; \
+//     height: 85px; \
+//     border-left: 30px solid white; \
+//     border-right: 30px solid white; \
+//     box-sizing: border-box; \
+// >>>>>>> eb7ab24181a52797662e8f5963e95717cae40c3f
 
   $('#voiceread').click(function() {
     $('#voiceread').hide();
@@ -193,7 +239,7 @@ chrome.storage.sync.get([
           return;
         }
         if (currentWord < wordElements.length - 1) {
-          currentPosition += .075 + (wordElements[currentWord][0].offsetTop - currentPosition)*.0025*speechRate;        
+          currentPosition += (.075 + (wordElements[currentWord][0].offsetTop + $(wordElements[currentWord]).height() - currentPosition)*.0025*speechRate)*(fontSize/50) + .0075*(lineSpace/10 + (600-width));    
           $('#voiceread_text')[0].scrollTop = currentPosition;
         }
       }, 10);
