@@ -11,11 +11,15 @@ var fontColor = '#DDD';
 var highlightColor = 'blue';
 
 var triggerKey = 'r';
+var settingsKey = 's';
 var speechRate = 500; // in wpm
 speechRate = speechRate/200; // in ratio
 
 var opacity = 1;
 var currentPosition = 0;
+
+var isVoiceReadActive = false;
+var isSettingsViewActive = false;
 
 chrome.storage.sync.get([
   'pageWidth',
@@ -38,8 +42,7 @@ chrome.storage.sync.get([
     highlightColor = settings.highlightColor;
     speechRate = settings.speechRate/200;
   } 
-  $('body').prepend('<div id="voiceread"><div id="voiceread_text"></div><div id="controls" class="pause"></div></div>');
-  $('body').append('<div id="settings"> \
+  $('body').prepend('<div id="container"><div id="voiceread"><div id="voiceread_text"></div><div id="controls" class="pause"></div></div><div id="settings"> \
     <h2>Visual Settings</h2> \
     <form> \
       Width: \
@@ -65,13 +68,18 @@ chrome.storage.sync.get([
     </form> \
     <div id="status"></div> \
     <button id="save">Save</button> \
-  </div>');
+  </div></div>');
   $('<style>').prop('type', 'text/css').html(' \
+    #container { \
+      overflow: hidden; \
+    } \
     #settings { \
       position: absolute; \
       right: -20%; \
+      width: 20%; \
+      height: 100%; \
       background-color: white; \
-      opacity: 0;
+      opacity: 0; \
       z-index: 1000001; \
     } \
     #voiceread { \
@@ -81,12 +89,12 @@ chrome.storage.sync.get([
       font-family: "' + font + '", "Segoe UI", "Lucida Grande", Tahoma, sans-serif; \
       font-size: ' + fontSize + 'px; \
       letter-spacing: ' + charSpace + 'px; \
-      float: left; \
       left: 0px; \
       position: absolute; \
       text-align: left; \
       top: 0px; \
       width: 100%; \
+      height: 100%; \
       z-index: 1000000; \
     } \
     #voiceread_text { \
@@ -119,54 +127,9 @@ chrome.storage.sync.get([
       border-right: 30px solid white; \
       box-sizing: border-box; \
   }').appendTo('head');
-// =======
-//   #voiceread { \
-//     background-color: rgba(0,0,0,' + opacity + '); \
-//     color: ' + fontColor + '; \
-//     display: none; \
-//     font-family: "' + font + '", "Segoe UI", "Lucida Grande", Tahoma, sans-serif; \
-//     font-size: ' + fontSize + 'px; \
-//     letter-spacing: ' + charSpace + 'px; \
-//     left: 0px; \
-//     position: fixed; \
-//     text-align: left; \
-//     top: 0px; \
-//     width: 100%; \
-//     z-index: 40000000; \
-//   } \
-//   #voiceread_text { \
-//     background-color: ' + backgroundColor + '; \
-//     width: ' + width + 'px; \
-//     height: ' + height + 'px; \
-//     line-height: ' + (parseInt(fontSize) + parseInt(lineSpace)) + 'px; \
-//     overflow-y: scroll; \
-//     margin: auto; \
-//     word-wrap: break-word; \
-//   } \
-//   .highlighted { \
-//     background-color: ' + highlightColor + '; \
-//   } \
-//   #controls { \
-//     position: absolute; \
-//     bottom: 10px; \
-//     left: 20px; \
-//   } \
-//   .play { \
-//     width: 0; \
-//     height: 0; \
-//     border-top: 50px solid transparent; \
-//     border-bottom: 50px solid transparent; \
-//     border-left: 75px solid white; \
-//   } \
-//   .pause { \
-//     width: 85px; \
-//     height: 85px; \
-//     border-left: 30px solid white; \
-//     border-right: 30px solid white; \
-//     box-sizing: border-box; \
-// >>>>>>> eb7ab24181a52797662e8f5963e95717cae40c3f
 
   $('#voiceread').click(function() {
+    isVoiceReadActive = false;
     $('#voiceread').hide();
     $('#voiceread_text').empty();
     wordElements = [];
@@ -233,6 +196,7 @@ chrome.storage.sync.get([
         utterance.voice = voices.filter(function(voice) {return voice.name == 'Karen'})[0];
       }
       $('#voiceread').show();
+      isVoiceReadActive = true;
       speechSynthesis.speak(utterance);
       interval = setInterval(function(){
         if (!playing) {
@@ -270,13 +234,8 @@ chrome.storage.sync.get([
       var text = window.getSelection().toString();
       openHighlightedText(text);
     } 
-    if (String.fromCharCode(e.which) === 's' || String.fromCharCode(e.which) === 's'.toUpperCase()) {
-      $( "#settings" ).animate({
-        right: "0",
-        width: "20%",
-        height: height + "px",
-        opacity: 1
-      }, 1000 );
+    if ((String.fromCharCode(e.which) === settingsKey || String.fromCharCode(e.which) === settingsKey.toUpperCase()) && isVoiceReadActive) {
+      toggleSettingsView();
     }
   });
 
@@ -290,6 +249,22 @@ chrome.storage.sync.get([
       togglePlaying();
       return false;
   });
+
+  function toggleSettingsView() {
+    if (isSettingsViewActive) {
+      $( "#settings" ).animate({
+        right: "-20%",
+        opacity: 0
+      }, 600 );
+      isSettingsViewActive = false;
+    } else {
+      $( "#settings" ).animate({
+        right: "0",
+        opacity: 1
+      }, 600 );  
+      isSettingsViewActive = true;   
+    }
+  }
 
   function togglePlaying(){
     if (playing){
