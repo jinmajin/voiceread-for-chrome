@@ -42,28 +42,39 @@ chrome.storage.sync.get([
     highlightColor = settings.highlightColor;
     speechRate = settings.speechRate/200;
   } 
+
+  //     $('#page_width').val(settings.pageWidth);
+//     $('#char_spacing').val(settings.charSpacing);
+//     $('#line_spacing').val(settings.lineSpacing);
+//     $('#font_size').val(settings.fontSize);
+//     $('#font_color').val(settings.fontColor);
+//     $('#background_color').val(settings.backgroundColor);
+//     $('#highlight_color').val(settings.highlightColor);
+//     $('#speech_rate').val(settings.speechRate);
+//     $('#speech_rate_value').html($('#speech_rate').val() + 'wpm');
+
   $('body').prepend('<div id="container"><div id="voiceread"><div id="voiceread_text"></div><div id="controls" class="pause"></div></div><div id="settings"> \
     <h2>Visual Settings</h2> \
     <form> \
       Width: \
-      <input id="page_width" type="number" name="width_points" min="0" max="100" step="10" value="40"><br> \
+      <input id="page_width" type="number" name="width_points" min="0" max="100" step="10" value="' + (width - 500) + '"><br> \
       Character Spacing: \
-      <input id="char_spacing" type="number" name="char_spacing_points" min="0" max="10" step="1" value="5"><br> \
+      <input id="char_spacing" type="number" name="char_spacing_points" min="0" max="10" step="1" value="' + charSpace + '"><br> \
       Line Spacing: \
-      <input id="line_spacing" type="number" name="line_spacing_points" min="0" max="50" step="1" value="10"><br> \
+      <input id="line_spacing" type="number" name="line_spacing_points" min="0" max="50" step="1" value="' + lineSpace + '"><br> \
       Font Size: \
-      <input id="font_size" type="number" name="font_size_points" min="0" max="100" step="1" value="50"><br> \
+      <input id="font_size" type="number" name="font_size_points" min="0" max="100" step="1" value="' + fontSize + '"><br> \
       Font Color: \
-      <input id="font_color" type="color" name="font_color_value" value="#DDDDDD"><br> \
+      <input id="font_color" type="color" name="font_color_value" value="' + fontColor + '"><br> \
       Background Color: \
-      <input id="background_color" type="color" name="background_color_value" value="#222222"><br> \
+      <input id="background_color" type="color" name="background_color_value" value="' + backgroundColor + '"><br> \
       Highlight Color: \
-      <input id="highlight_color" type="color" name="highlight_color_value" value="#0000FF"><br> \
+      <input id="highlight_color" type="color" name="highlight_color_value" value="' + highlightColor + '"><br> \
     </form> \
     <h2>Audio Settings</h2> \
     <form> \
       Speech Rate: \
-      <input id="speech_rate" type="range" name="speech_rate_points" min="100" max="600" value="500"> \
+      <input id="speech_rate" type="range" name="speech_rate_points" min="100" max="600" value="' + (speechRate * 200) + '"> \
       <span id="speech_rate_value">500wpm</span> \
     </form> \
     <div id="status"></div> \
@@ -282,5 +293,42 @@ chrome.storage.sync.get([
       playing = true;
     }
   };
+
+  // Saves options to chrome.storage
+  function save_options() {
+    console.log("clicked");
+    var page_width = $('#page_width').val();
+    var char_spacing = $('#char_spacing').val();
+    var line_spacing = $('#line_spacing').val();
+    var font_size = $('#font_size').val();
+    var font_color = $('#font_color').val();
+    var background_color = $('#background_color').val();
+    var highlight_color = $('#highlight_color').val();
+    var speech_rate = $('#speech_rate').val();
+    chrome.storage.sync.set({
+      pageWidth: page_width,
+      charSpacing: char_spacing,
+      lineSpacing: line_spacing,
+      fontSize: font_size,
+      fontColor: font_color,
+      backgroundColor: background_color,
+      highlightColor: highlight_color,
+      speechRate: speech_rate
+    }, function() {
+      // Update status to let user know options were saved.
+      var status = $('#status');
+      status.html('Options saved.');
+      setTimeout(function() {
+        status.html('');
+      }, 750);
+    });
+  }
+
+  // document.addEventListener('DOMContentLoaded', function() {
+    $('#save').click(save_options);
+    $('#speech_rate').on('input', function() {
+      $('#speech_rate_value').html($('#speech_rate').val() + 'wpm');
+    });
+  // });
 
 });
