@@ -43,16 +43,6 @@ chrome.storage.sync.get([
     speechRate = settings.speechRate/200;
   } 
 
-  //     $('#page_width').val(settings.pageWidth);
-//     $('#char_spacing').val(settings.charSpacing);
-//     $('#line_spacing').val(settings.lineSpacing);
-//     $('#font_size').val(settings.fontSize);
-//     $('#font_color').val(settings.fontColor);
-//     $('#background_color').val(settings.backgroundColor);
-//     $('#highlight_color').val(settings.highlightColor);
-//     $('#speech_rate').val(settings.speechRate);
-//     $('#speech_rate_value').html($('#speech_rate').val() + 'wpm');
-
   $('body').prepend('<div id="container"><div id="voiceread"><div id="voiceread_text"></div><div id="controls" class="pause"></div></div><div id="settings"> \
     <h2>Visual Settings</h2> \
     <form> \
@@ -78,6 +68,7 @@ chrome.storage.sync.get([
       <span id="speech_rate_value">500wpm</span> \
     </form> \
     <div id="status"></div> \
+    <button id="cancel">Cancel</button> \
     <button id="save">Save</button> \
   </div></div>');
   $('<style>').prop('type', 'text/css').html(' \
@@ -323,12 +314,23 @@ chrome.storage.sync.get([
       }, 750);
     });
   }
+ 
+  function restore_options() {
+    $('#page_width').val(width-500);
+    $('#char_spacing').val(charSpace);
+    $('#line_spacing').val(lineSpace);
+    $('#font_size').val(fontSize);
+    $('#font_color').val(fontColor);
+    $('#background_color').val(backgroundColor);
+    $('#highlight_color').val(highlightColor);
+    $('#speech_rate').val(speechRate * 200);
+    $('#speech_rate_value').html($('#speech_rate').val() + 'wpm');
+  }
 
-  // document.addEventListener('DOMContentLoaded', function() {
-    $('#save').click(save_options);
-    $('#speech_rate').on('input', function() {
-      $('#speech_rate_value').html($('#speech_rate').val() + 'wpm');
-    });
-  // });
+  $('#save').click(save_options);
+  $('#speech_rate').on('input', function() {
+    $('#speech_rate_value').html($('#speech_rate').val() + 'wpm');
+  });
 
+  $('#cancel').click(restore_options);
 });
