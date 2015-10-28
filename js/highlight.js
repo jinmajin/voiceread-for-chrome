@@ -33,7 +33,7 @@ chrome.storage.sync.get([
   'speechRate'
 ], function(settings) {
   if (Object.keys(settings).length > 0) {
-    width = 500 + parseInt(settings.pageWidth);
+    width = 300 + parseInt(settings.pageWidth)*3;
     charSpace = settings.charSpacing;
     lineSpace = settings.lineSpacing;
     fontSize = settings.fontSize;
@@ -43,11 +43,11 @@ chrome.storage.sync.get([
     speechRate = settings.speechRate/200;
   } 
 
-  $('body').prepend('<div id="container"><div id="voiceread"><div id="voiceread_text"></div><div id="controls" class="pause"></div></div><div id="settings"> \
+  $('body').prepend('<div id="voiceread_container"><div id="voiceread"><div id="voiceread_text"></div><div id="voiceread_controls" class="pause"></div></div><div id="voiceread_settings"> \
     <h2>Visual Settings</h2> \
     <form> \
       Width: \
-      <input id="page_width" type="range" name="width_points" min="0" max="150" step="10" value="' + (width - 500) + '"><br> \
+      <input id="page_width" type="number" name="width_points" min="0" max="100" step="10" value="' + ((width - 300)/3) + '"><br> \
       Character Spacing: \
       <input id="char_spacing" type="range" name="char_spacing_points" min="0" max="10" step="1" value="' + charSpace + '"><br> \
       Line Spacing: \
@@ -72,21 +72,27 @@ chrome.storage.sync.get([
     <button id="save">Save</button> \
   </div></div>');
   $('<style>').prop('type', 'text/css').html(' \
-    #container { \
-      overflow: hidden; \
+    #voiceread_container { \
+      position: fixed; \
+      left: 0; \
+      top: 0; \
+      background-color: rgba(0,0,0,' + opacity + '); \
+      width: 100%; \
+      height: ' + height + 'px; \
       display: none; \
+      z-index: 1000000; \
     } \
-    #settings { \
+    #voiceread_settings { \
       position: absolute; \
-      right: -20%; \
-      width: 20%; \
       height: 100%; \
+      white-space: nowrap; \
+      right: 0; \
+      width: 0px; \
+      overflow: hidden; \
       background-color: white; \
-      opacity: 0; \
       z-index: 1000001; \
     } \
     #voiceread { \
-      background-color: rgba(0,0,0,' + opacity + '); \
       color: ' + fontColor + '; \
       font-family: "' + font + '", "Segoe UI", "Lucida Grande", Tahoma, sans-serif; \
       font-size: ' + fontSize + 'px; \
@@ -110,7 +116,7 @@ chrome.storage.sync.get([
     .highlighted { \
       background-color: ' + highlightColor + '; \
     } \
-    #controls { \
+    #voiceread_controls { \
       position: absolute; \
       bottom: 10px; \
       left: 20px; \
@@ -132,7 +138,8 @@ chrome.storage.sync.get([
 
   $('#voiceread').click(function() {
     isVoiceReadActive = false;
-    $('#container').hide();
+    $('#voiceread_container').hide();
+    document.body.style.overflow = 'auto';
     if (isSettingsViewActive) {
       toggleSettingsView();
     } 
@@ -143,8 +150,8 @@ chrome.storage.sync.get([
     currentPosition = 0;
     playing = true;
     clearInterval(interval);
-    $('#controls').removeClass('play');
-    $('#controls').addClass('pause');
+    $('#voiceread_controls').removeClass('play');
+    $('#voiceread_controls').addClass('pause');
     speechSynthesis.cancel();
   });
 
@@ -200,8 +207,9 @@ chrome.storage.sync.get([
       if (voices.length > 0) {
         utterance.voice = voices.filter(function(voice) {return voice.name == 'Karen'})[0];
       }
-      $('#container').show();
+      $('#voiceread_container').show();
       isVoiceReadActive = true;
+      document.body.style.overflow = 'hidden';
       speechSynthesis.speak(utterance);
       interval = setInterval(function(){
         if (!playing) {
@@ -250,23 +258,21 @@ chrome.storage.sync.get([
     }
   });
 
-  $('#controls').click(function(e) {
+  $('#voiceread_controls').click(function(e) {
       togglePlaying();
       return false;
   });
 
   function toggleSettingsView() {
     if (isSettingsViewActive) {
-      $( "#settings" ).animate({
-        right: "-20%",
-        opacity: 0
-      }, 600 );
+      $( "#voiceread_settings" ).animate({
+        width: "0px"
+      }, 400 );
       isSettingsViewActive = false;
     } else {
-      $( "#settings" ).animate({
-        right: "0",
-        opacity: 1
-      }, 600 );  
+      $( "#voiceread_settings" ).animate({
+        width: "300px"
+      }, 400 );  
       isSettingsViewActive = true;   
     }
   }
@@ -274,13 +280,13 @@ chrome.storage.sync.get([
   function togglePlaying(){
     if (playing){
       speechSynthesis.pause();
-      $('#controls').removeClass('pause');
-      $('#controls').addClass('play');
+      $('#voiceread_controls').removeClass('pause');
+      $('#voiceread_controls').addClass('play');
       playing = false;
     } else{
       speechSynthesis.resume();
-      $('#controls').removeClass('play');
-      $('#controls').addClass('pause');
+      $('#voiceread_controls').removeClass('play');
+      $('#voiceread_controls').addClass('pause');
       playing = true;
     }
   };
@@ -315,7 +321,7 @@ chrome.storage.sync.get([
   }
  
   function restore_options() {
-    $('#page_width').val(width - 500);
+    $('#page_width').val((width-300)/3);
     $('#voiceread_text').css( "width", width + "px" );
 
     $('#char_spacing').val(charSpace);
@@ -339,7 +345,6 @@ chrome.storage.sync.get([
 
     $('#speech_rate').val(speechRate * 200);
     $('#speech_rate_value').html($('#speech_rate').val() + 'wpm');
-
   }
 
   $('#save').click(save_options);
@@ -351,7 +356,7 @@ chrome.storage.sync.get([
 
   // Settings Listeners
   $('#page_width').change(function() {
-    var new_width = 500 + parseInt($(this).val());
+    var new_width = 300 + parseInt($(this).val())*3;
     $('#voiceread_text').css( "width", new_width + "px" );
   });
   $('#char_spacing').change(function() {
