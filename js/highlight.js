@@ -267,12 +267,12 @@ chrome.storage.sync.get([
     if (isSettingsViewActive) {
       $( "#voiceread_settings" ).animate({
         width: "0px"
-      }, 600 );
+      }, 400 );
       isSettingsViewActive = false;
     } else {
       $( "#voiceread_settings" ).animate({
         width: "300px"
-      }, 600 );  
+      }, 400 );  
       isSettingsViewActive = true;   
     }
   }
