@@ -33,7 +33,7 @@ chrome.storage.sync.get([
   'speechRate'
 ], function(settings) {
   if (Object.keys(settings).length > 0) {
-    width = 500 + parseInt(settings.pageWidth);
+    width = 300 + parseInt(settings.pageWidth)*3;
     charSpace = settings.charSpacing;
     lineSpace = settings.lineSpacing;
     fontSize = settings.fontSize;
@@ -47,7 +47,7 @@ chrome.storage.sync.get([
     <h2>Visual Settings</h2> \
     <form> \
       Width: \
-      <input id="page_width" type="number" name="width_points" min="0" max="100" step="10" value="' + (width - 500) + '"><br> \
+      <input id="page_width" type="number" name="width_points" min="0" max="100" step="10" value="' + ((width - 300)/3) + '"><br> \
       Character Spacing: \
       <input id="char_spacing" type="number" name="char_spacing_points" min="0" max="10" step="1" value="' + charSpace + '"><br> \
       Line Spacing: \
@@ -321,7 +321,7 @@ chrome.storage.sync.get([
   }
  
   function restore_options() {
-    $('#page_width').val(width-500);
+    $('#page_width').val((width-300)/3);
     $('#char_spacing').val(charSpace);
     $('#line_spacing').val(lineSpace);
     $('#font_size').val(fontSize);
