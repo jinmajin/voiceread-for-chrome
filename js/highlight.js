@@ -55,7 +55,7 @@ chrome.storage.sync.get([
       Line Spacing: \
       <input id="line_spacing" type="range" name="line_spacing_points" min="0" max="50" step="1" value="' + lineSpace + '"><br> \
       Font Size: \
-      <input id="font_size" type="range" name="font_size_points" min="0" max="100" step="1" value="' + fontSize + '"><br> \
+      <input id="font_size" type="range" name="font_size_points" min="5" max="100" step="1" value="' + fontSize + '"><br> \
       Font Color: \
       <input id="font_color" type="color" name="font_color_value" value="' + fontColor + '"><br> \
       Background Color: \
@@ -384,12 +384,14 @@ chrome.storage.sync.get([
     $('#voiceread').css( "letter-spacing", new_char_spacing + "px" );
   });
   $('#line_spacing').change(function() {
-    var new_line_spacing = parseInt(fontSize) + parseInt($(this).val());
+    var new_line_spacing = parseInt($('#font_size').val()) + parseInt($(this).val());
     $('#voiceread_text').css( "line-height", new_line_spacing + "px" );
   });
   $('#font_size').change(function() {
     var new_font_size = parseInt($(this).val());
     $('#voiceread').css( "font-size", new_font_size + "px" );
+    var new_line_spacing = parseInt($('#font_size').val()) + parseInt($(this).val());
+    $('#voiceread_text').css( "line-height", new_line_spacing + "px" );
   });
   $('#font_color').change(function() {
     var new_font_color = $(this).val();
