@@ -73,7 +73,7 @@ chrome.storage.sync.get([
   </div></div>');
   $('<style>').prop('type', 'text/css').html(' \
     #voiceread_container { \
-      position: fixed; \
+      position: absolute; \
       left: 0; \
       top: 0; \
       background-color: rgba(0,0,0,' + opacity + '); \
