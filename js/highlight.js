@@ -14,6 +14,7 @@ var triggerKey = 'r';
 var settingsKey = 's';
 var speechRate = 500; // in wpm
 speechRate = speechRate/200; // in ratio
+var oldSpeechRate = speechRate;
 
 var opacity = 1;
 var currentPosition = 0;
@@ -41,13 +42,14 @@ chrome.storage.sync.get([
     backgroundColor = settings.backgroundColor;
     highlightColor = settings.highlightColor;
     speechRate = settings.speechRate/200;
+    oldSpeechRate = speechRate;
   } 
 
   $('body').prepend('<div id="voiceread_container"><div id="voiceread"><div id="voiceread_text"></div><div id="voiceread_controls" class="pause"></div></div><div id="voiceread_settings"> \
     <h2>Visual Settings</h2> \
     <form> \
       Width: \
-      <input id="page_width" type="number" name="width_points" min="0" max="100" step="10" value="' + ((width - 300)/3) + '"><br> \
+      <input id="page_width" type="range" name="width_points" min="0" max="100" step="10" value="' + ((width - 300)/3) + '"><br> \
       Character Spacing: \
       <input id="char_spacing" type="range" name="char_spacing_points" min="0" max="10" step="1" value="' + charSpace + '"><br> \
       Line Spacing: \
@@ -190,6 +192,24 @@ chrome.storage.sync.get([
     }
   }
 
+  function changeAndPlayVoice(newVoice) {
+    var index = currentWord;
+    speechSynthesis.cancel();
+    currentWord = index;
+    highlightWord();
+    utterance = new SpeechSynthesisUtterance(words.slice(index, words.length).join(" "));
+    utterance.rate = speechRate;
+    utterance.onboundary = incrementWord;
+    if (voices.length > 0) {
+      utterance.voice = voices.filter(function(voice) {return voice.name == newVoice})[0];
+    }
+    currentPosition = $('#voiceread_text')[0].scrollTop;
+    speechSynthesis.speak(utterance);
+    if (!playing) {
+      togglePlaying();
+    }
+  }
+
   function openHighlightedText(text) {
     if (text) {
       $('#voiceread_text').empty();
@@ -248,6 +268,9 @@ chrome.storage.sync.get([
       openHighlightedText(text);
     } 
     if ((String.fromCharCode(e.which) === settingsKey || String.fromCharCode(e.which) === settingsKey.toUpperCase()) && isVoiceReadActive) {
+      if (playing) {
+        togglePlaying();
+      }
       toggleSettingsView();
     }
   });
@@ -343,15 +366,12 @@ chrome.storage.sync.get([
     $('#highlight_color').val(highlightColor);
     $('.highlighted').css( "background-color", highlightColor );
 
-    $('#speech_rate').val(speechRate * 200);
+    $('#speech_rate').val(oldSpeechRate * 200);
+    speechRate = oldSpeechRate;
     $('#speech_rate_value').html($('#speech_rate').val() + 'wpm');
   }
 
   $('#save').click(save_options);
-  $('#speech_rate').on('input', function() {
-    $('#speech_rate_value').html($('#speech_rate').val() + 'wpm');
-  });
-
   $('#cancel').click(restore_options);
 
   // Settings Listeners
@@ -383,5 +403,10 @@ chrome.storage.sync.get([
     var new_highlight_color = $(this).val();
     $('.highlighted').css( "background-color", new_highlight_color );
   });
-
+  $('#speech_rate').on('input', function() {
+    var new_speech_rate = $('#speech_rate').val();
+    $('#speech_rate_value').html(new_speech_rate + 'wpm');
+    speechRate = new_speech_rate/200;
+    changeAndPlayVoice('Karen');
+  });
 });
