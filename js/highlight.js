@@ -1,14 +1,14 @@
 var height = window.innerHeight;
 var width = 600;
 
-var backgroundColor = '#222';
+var backgroundColor = '#222222';
 var charSpace = 5;
 var lineSpace = 10;
 
 var font = "Avenir Next";
 var fontSize = 50;
-var fontColor = '#DDD';
-var highlightColor = 'blue';
+var fontColor = '#DDDDDD';
+var highlightColor = '#0000FF';
 
 var triggerKey = 'r';
 var settingsKey = 's';
@@ -47,13 +47,13 @@ chrome.storage.sync.get([
     <h2>Visual Settings</h2> \
     <form> \
       Width: \
-      <input id="page_width" type="number" name="width_points" min="0" max="100" step="10" value="' + (width - 500) + '"><br> \
+      <input id="page_width" type="range" name="width_points" min="0" max="150" step="10" value="' + (width - 500) + '"><br> \
       Character Spacing: \
-      <input id="char_spacing" type="number" name="char_spacing_points" min="0" max="10" step="1" value="' + charSpace + '"><br> \
+      <input id="char_spacing" type="range" name="char_spacing_points" min="0" max="10" step="1" value="' + charSpace + '"><br> \
       Line Spacing: \
-      <input id="line_spacing" type="number" name="line_spacing_points" min="0" max="50" step="1" value="' + lineSpace + '"><br> \
+      <input id="line_spacing" type="range" name="line_spacing_points" min="0" max="50" step="1" value="' + lineSpace + '"><br> \
       Font Size: \
-      <input id="font_size" type="number" name="font_size_points" min="0" max="100" step="1" value="' + fontSize + '"><br> \
+      <input id="font_size" type="range" name="font_size_points" min="0" max="100" step="1" value="' + fontSize + '"><br> \
       Font Color: \
       <input id="font_color" type="color" name="font_color_value" value="' + fontColor + '"><br> \
       Background Color: \
@@ -287,7 +287,6 @@ chrome.storage.sync.get([
 
   // Saves options to chrome.storage
   function save_options() {
-    console.log("clicked");
     var page_width = $('#page_width').val();
     var char_spacing = $('#char_spacing').val();
     var line_spacing = $('#line_spacing').val();
@@ -316,15 +315,31 @@ chrome.storage.sync.get([
   }
  
   function restore_options() {
-    $('#page_width').val(width-500);
+    $('#page_width').val(width - 500);
+    $('#voiceread_text').css( "width", width + "px" );
+
     $('#char_spacing').val(charSpace);
+    $('#voiceread').css( "letter-spacing", charSpace + "px" );
+
     $('#line_spacing').val(lineSpace);
+    var oldLineSpace = parseInt(fontSize) + parseInt(lineSpace);
+    $('#voiceread_text').css( "line-height", oldLineSpace + "px" );
+
     $('#font_size').val(fontSize);
+    $('#voiceread').css( "font-size", fontSize + "px" );
+
     $('#font_color').val(fontColor);
+    $('#voiceread').css( "color", fontColor );
+
     $('#background_color').val(backgroundColor);
+    $('#voiceread_text').css( "background-color", backgroundColor );
+
     $('#highlight_color').val(highlightColor);
+    $('.highlighted').css( "background-color", highlightColor );
+
     $('#speech_rate').val(speechRate * 200);
     $('#speech_rate_value').html($('#speech_rate').val() + 'wpm');
+
   }
 
   $('#save').click(save_options);
@@ -333,4 +348,35 @@ chrome.storage.sync.get([
   });
 
   $('#cancel').click(restore_options);
+
+  // Settings Listeners
+  $('#page_width').change(function() {
+    var new_width = 500 + parseInt($(this).val());
+    $('#voiceread_text').css( "width", new_width + "px" );
+  });
+  $('#char_spacing').change(function() {
+    var new_char_spacing = parseInt($(this).val());
+    $('#voiceread').css( "letter-spacing", new_char_spacing + "px" );
+  });
+  $('#line_spacing').change(function() {
+    var new_line_spacing = parseInt(fontSize) + parseInt($(this).val());
+    $('#voiceread_text').css( "line-height", new_line_spacing + "px" );
+  });
+  $('#font_size').change(function() {
+    var new_font_size = parseInt($(this).val());
+    $('#voiceread').css( "font-size", new_font_size + "px" );
+  });
+  $('#font_color').change(function() {
+    var new_font_color = $(this).val();
+    $('#voiceread').css( "color", new_font_color );
+  });
+  $('#background_color').change(function() {
+    var new_bg_color = $(this).val();
+    $('#voiceread_text').css( "background-color", new_bg_color );
+  });
+  $('#highlight_color').change(function() {
+    var new_highlight_color = $(this).val();
+    $('.highlighted').css( "background-color", new_highlight_color );
+  });
+
 });
