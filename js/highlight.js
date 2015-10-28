@@ -78,11 +78,12 @@ chrome.storage.sync.get([
     } \
     #voiceread_settings { \
       position: absolute; \
-      right: -20%; \
-      width: 20%; \
       height: 100%; \
+      white-space: nowrap; \
+      right: 0; \
+      width: 0px; \
+      overflow: hidden; \
       background-color: white; \
-      opacity: 0; \
       z-index: 1000001; \
     } \
     #voiceread { \
@@ -258,14 +259,12 @@ chrome.storage.sync.get([
   function toggleSettingsView() {
     if (isSettingsViewActive) {
       $( "#voiceread_settings" ).animate({
-        right: "-20%",
-        opacity: 0
+        width: "0px"
       }, 600 );
       isSettingsViewActive = false;
     } else {
       $( "#voiceread_settings" ).animate({
-        right: "0",
-        opacity: 1
+        width: "300px"
       }, 600 );  
       isSettingsViewActive = true;   
     }
