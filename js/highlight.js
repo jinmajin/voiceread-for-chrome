@@ -73,8 +73,14 @@ chrome.storage.sync.get([
   </div></div>');
   $('<style>').prop('type', 'text/css').html(' \
     #voiceread_container { \
-      overflow: hidden; \
+      position: fixed; \
+      left: 0; \
+      top: 0; \
+      background-color: rgba(0,0,0,' + opacity + '); \
+      width: 100%; \
+      height: ' + height + 'px; \
       display: none; \
+      z-index: 1000000; \
     } \
     #voiceread_settings { \
       position: absolute; \
@@ -87,7 +93,6 @@ chrome.storage.sync.get([
       z-index: 1000001; \
     } \
     #voiceread { \
-      background-color: rgba(0,0,0,' + opacity + '); \
       color: ' + fontColor + '; \
       font-family: "' + font + '", "Segoe UI", "Lucida Grande", Tahoma, sans-serif; \
       font-size: ' + fontSize + 'px; \
@@ -134,6 +139,7 @@ chrome.storage.sync.get([
   $('#voiceread').click(function() {
     isVoiceReadActive = false;
     $('#voiceread_container').hide();
+    document.body.style.overflow = 'auto';
     if (isSettingsViewActive) {
       toggleSettingsView();
     } 
@@ -203,6 +209,7 @@ chrome.storage.sync.get([
       }
       $('#voiceread_container').show();
       isVoiceReadActive = true;
+      document.body.style.overflow = 'hidden';
       speechSynthesis.speak(utterance);
       interval = setInterval(function(){
         if (!playing) {
