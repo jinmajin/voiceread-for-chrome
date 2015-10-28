@@ -43,7 +43,7 @@ chrome.storage.sync.get([
     speechRate = settings.speechRate/200;
   } 
 
-  $('body').prepend('<div id="container"><div id="voiceread"><div id="voiceread_text"></div><div id="controls" class="pause"></div></div><div id="settings"> \
+  $('body').prepend('<div id="voiceread_container"><div id="voiceread"><div id="voiceread_text"></div><div id="voiceread_controls" class="pause"></div></div><div id="voiceread_settings"> \
     <h2>Visual Settings</h2> \
     <form> \
       Width: \
@@ -72,11 +72,11 @@ chrome.storage.sync.get([
     <button id="save">Save</button> \
   </div></div>');
   $('<style>').prop('type', 'text/css').html(' \
-    #container { \
+    #voiceread_container { \
       overflow: hidden; \
       display: none; \
     } \
-    #settings { \
+    #voiceread_settings { \
       position: absolute; \
       right: -20%; \
       width: 20%; \
@@ -110,7 +110,7 @@ chrome.storage.sync.get([
     .highlighted { \
       background-color: ' + highlightColor + '; \
     } \
-    #controls { \
+    #voiceread_controls { \
       position: absolute; \
       bottom: 10px; \
       left: 20px; \
@@ -132,7 +132,7 @@ chrome.storage.sync.get([
 
   $('#voiceread').click(function() {
     isVoiceReadActive = false;
-    $('#container').hide();
+    $('#voiceread_container').hide();
     if (isSettingsViewActive) {
       toggleSettingsView();
     } 
@@ -143,8 +143,8 @@ chrome.storage.sync.get([
     currentPosition = 0;
     playing = true;
     clearInterval(interval);
-    $('#controls').removeClass('play');
-    $('#controls').addClass('pause');
+    $('#voiceread_controls').removeClass('play');
+    $('#voiceread_controls').addClass('pause');
     speechSynthesis.cancel();
   });
 
@@ -200,7 +200,7 @@ chrome.storage.sync.get([
       if (voices.length > 0) {
         utterance.voice = voices.filter(function(voice) {return voice.name == 'Karen'})[0];
       }
-      $('#container').show();
+      $('#voiceread_container').show();
       isVoiceReadActive = true;
       speechSynthesis.speak(utterance);
       interval = setInterval(function(){
@@ -250,20 +250,20 @@ chrome.storage.sync.get([
     }
   });
 
-  $('#controls').click(function(e) {
+  $('#voiceread_controls').click(function(e) {
       togglePlaying();
       return false;
   });
 
   function toggleSettingsView() {
     if (isSettingsViewActive) {
-      $( "#settings" ).animate({
+      $( "#voiceread_settings" ).animate({
         right: "-20%",
         opacity: 0
       }, 600 );
       isSettingsViewActive = false;
     } else {
-      $( "#settings" ).animate({
+      $( "#voiceread_settings" ).animate({
         right: "0",
         opacity: 1
       }, 600 );  
@@ -274,20 +274,19 @@ chrome.storage.sync.get([
   function togglePlaying(){
     if (playing){
       speechSynthesis.pause();
-      $('#controls').removeClass('pause');
-      $('#controls').addClass('play');
+      $('#voiceread_controls').removeClass('pause');
+      $('#voiceread_controls').addClass('play');
       playing = false;
     } else{
       speechSynthesis.resume();
-      $('#controls').removeClass('play');
-      $('#controls').addClass('pause');
+      $('#voiceread_controls').removeClass('play');
+      $('#voiceread_controls').addClass('pause');
       playing = true;
     }
   };
 
   // Saves options to chrome.storage
   function save_options() {
-    console.log("clicked");
     var page_width = $('#page_width').val();
     var char_spacing = $('#char_spacing').val();
     var line_spacing = $('#line_spacing').val();
