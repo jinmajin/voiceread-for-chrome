@@ -370,6 +370,8 @@ chrome.storage.sync.get([
   $('#font_size').change(function() {
     var new_font_size = parseInt($(this).val());
     $('#voiceread').css( "font-size", new_font_size + "px" );
+    var new_line_spacing = parseInt($('#font_size').val()) + parseInt($(this).val());
+    $('#voiceread_text').css( "line-height", new_line_spacing + "px" );
   });
   $('#font_color').change(function() {
     var new_font_color = $(this).val();
