@@ -26,6 +26,7 @@ chrome.storage.sync.get([
   'charSpacing',
   'highlightColor',
   'lineSpacing',
+  'font',
   'fontSize',
   'fontColor',
   'backgroundColor',    
@@ -36,6 +37,7 @@ chrome.storage.sync.get([
     width = 300 + parseInt(settings.pageWidth)*3;
     charSpace = settings.charSpacing;
     lineSpace = settings.lineSpacing;
+    font = settings.font;
     fontSize = settings.fontSize;
     fontColor = settings.fontColor;
     backgroundColor = settings.backgroundColor;
@@ -52,6 +54,12 @@ chrome.storage.sync.get([
       <input id="char_spacing" type="range" name="char_spacing_points" min="0" max="10" step="1" value="' + charSpace + '"><br> \
       Line Spacing: \
       <input id="line_spacing" type="range" name="line_spacing_points" min="0" max="50" step="1" value="' + lineSpace + '"><br> \
+      Font Type: \
+      <select id="font_type" name="font_type" value="' + font +'""> \
+        <option value="Avenir Next">Avenir Next</option> \
+        <option value="Segoe UI">Segoe UI</option> \
+        <option value="Lucida Grande">Lucida Grande</option> \
+      </select><br> \
       Font Size: \
       <input id="font_size" type="range" name="font_size_points" min="5" max="100" step="1" value="' + fontSize + '"><br> \
       Font Color: \
@@ -296,6 +304,7 @@ chrome.storage.sync.get([
     var page_width = $('#page_width').val();
     var char_spacing = $('#char_spacing').val();
     var line_spacing = $('#line_spacing').val();
+    var font_type = $('#font_type').val();
     var font_size = $('#font_size').val();
     var font_color = $('#font_color').val();
     var background_color = $('#background_color').val();
@@ -305,6 +314,7 @@ chrome.storage.sync.get([
       pageWidth: page_width,
       charSpacing: char_spacing,
       lineSpacing: line_spacing,
+      font: font_type,
       fontSize: font_size,
       fontColor: font_color,
       backgroundColor: background_color,
@@ -330,6 +340,9 @@ chrome.storage.sync.get([
     $('#line_spacing').val(lineSpace);
     var oldLineSpace = parseInt(fontSize) + parseInt(lineSpace);
     $('#voiceread_text').css( "line-height", oldLineSpace + "px" );
+
+    $('#font_type').val(font);
+    $('#voiceread').css( "font-family", font );
 
     $('#font_size').val(fontSize);
     $('#voiceread').css( "font-size", fontSize + "px" );
@@ -366,6 +379,10 @@ chrome.storage.sync.get([
   $('#line_spacing').change(function() {
     var new_line_spacing = parseInt($('#font_size').val()) + parseInt($(this).val());
     $('#voiceread_text').css( "line-height", new_line_spacing + "px" );
+  });
+  $('#font_type').change(function(){
+    var new_font_type = $(this).val();
+    $('#voiceread').css("font-family", new_font_type);
   });
   $('#font_size').change(function() {
     var new_font_size = parseInt($(this).val());
