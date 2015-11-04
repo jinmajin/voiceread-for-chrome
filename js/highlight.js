@@ -1,3 +1,5 @@
+var autoScroll = true;
+
 var height = window.innerHeight;
 var width = 600;
 
@@ -17,12 +19,12 @@ speechRate = speechRate/200; // in ratio
 var oldSpeechRate = speechRate;
 
 var opacity = 1;
-var currentPosition = 0;
 
 var isVoiceReadActive = false;
 var isSettingsViewActive = false;
 
 chrome.storage.sync.get([
+  'autoScroll',
   'pageWidth',
   'charSpacing',
   'highlightColor',
@@ -45,6 +47,7 @@ chrome.storage.sync.get([
     highlightColor = settings.highlightColor;
     speechRate = settings.speechRate/200;
     oldSpeechRate = speechRate;
+    autoScroll = settings.autoScroll;
   } 
 
   $('body').prepend('<div id="voiceread_container"><div id="voiceread"><div id="voiceread_text"></div><div id="voiceread_controls" class="pause"></div></div><div id="voiceread_settings"> \
@@ -70,6 +73,8 @@ chrome.storage.sync.get([
       <input id="background_color" type="color" name="background_color_value" value="' + backgroundColor + '"><br> \
       Highlight Color: \
       <input id="highlight_color" type="color" name="highlight_color_value" value="' + highlightColor + '"><br> \
+      Auto Scroll: \
+      <input id="auto_scroll" type="checkbox" name="auto_scroll_value" ' + (autoScroll ? 'checked' : '') + '><br> \
     </form> \
     <h2>Audio Settings</h2> \
     <form> \
@@ -157,7 +162,6 @@ chrome.storage.sync.get([
     wordElements = [];
     currentWord = 0;
     previousWord = 0;
-    currentPosition = 0;
     playing = true;
     clearInterval(interval);
     $('#voiceread_controls').removeClass('play');
@@ -193,7 +197,6 @@ chrome.storage.sync.get([
     if (voices.length > 0) {
       utterance.voice = voices.filter(function(voice) {return voice.name == 'Karen'})[0];
     }
-    currentPosition = $('#voiceread_text')[0].scrollTop;
     speechSynthesis.speak(utterance);
     if (!playing) {
       togglePlaying();
@@ -211,7 +214,6 @@ chrome.storage.sync.get([
     if (voices.length > 0) {
       utterance.voice = voices.filter(function(voice) {return voice.name == newVoice})[0];
     }
-    currentPosition = $('#voiceread_text')[0].scrollTop;
     speechSynthesis.speak(utterance);
     if (!playing) {
       togglePlaying();
@@ -221,6 +223,7 @@ chrome.storage.sync.get([
   function openHighlightedText(text) {
     if (text) {
       $('#voiceread_text').empty();
+      $('#voiceread_text')[0].scrollTop = 0;
       words = text.split(/\s+/);
       for(var i = 0; i < words.length; i++) {
         var word = $('<span />').attr('word', i).html(words[i]);
@@ -244,8 +247,18 @@ chrome.storage.sync.get([
           return;
         }
         if (currentWord < wordElements.length - 1) {
-          currentPosition += (.075 + (wordElements[currentWord][0].offsetTop + $(wordElements[currentWord]).height() - currentPosition)*.0025*speechRate)*(fontSize/50) + .0075*(lineSpace/10 + (600-width));    
-          $('#voiceread_text')[0].scrollTop = currentPosition;
+          console.log(autoScroll);
+          if (autoScroll) {
+            $('#voiceread_text')[0].scrollTop += (.075 + (wordElements[currentWord][0].offsetTop + $(wordElements[currentWord]).height() - $('#voiceread_text')[0].scrollTop)*.0025*speechRate)*(fontSize/50) + .0075*(lineSpace/10 + (600-width));
+          }
+          if (wordElements[currentWord][0].getBoundingClientRect().bottom > (height - parseInt(lineSpace))) {
+            speechSynthesis.pause();
+            wordElements[currentWord][0].scrollIntoView(true, {behavior: "smooth"});
+            if (wordElements[currentWord][0].getBoundingClientRect().bottom < (parseInt(lineSpace) + parseInt(fontSize))) {
+              $('#voiceread_text')[0].scrollTop -= height/2;
+            }
+            speechSynthesis.resume();
+          }
         }
       }, 10);
     }
@@ -319,17 +332,21 @@ chrome.storage.sync.get([
       $('#voiceread_controls').removeClass('pause');
       $('#voiceread_controls').addClass('play');
       playing = false;
-    } else{
+    } else if (!isSettingsViewActive){
       speechSynthesis.resume();
       $('#voiceread_controls').removeClass('play');
       $('#voiceread_controls').addClass('pause');
       playing = true;
+    } else {
+      alert ('please close settings before clicking play');
     }
   };
 
   // Saves options to chrome.storage
   function save_options() {
     saved = true;
+    var auto_scroll = $('#auto_scroll').is(':checked');
+    autoScroll = auto_scroll;
     var page_width = $('#page_width').val();
     var char_spacing = $('#char_spacing').val();
     var line_spacing = $('#line_spacing').val();
@@ -340,6 +357,7 @@ chrome.storage.sync.get([
     var highlight_color = $('#highlight_color').val();
     var speech_rate = $('#speech_rate').val();
     chrome.storage.sync.set({
+      autoScroll: auto_scroll,
       pageWidth: page_width,
       charSpacing: char_spacing,
       lineSpacing: line_spacing,
@@ -360,6 +378,8 @@ chrome.storage.sync.get([
   }
  
   function restore_options() {
+    $('#auto_scroll').prop('checked', autoScroll);
+
     $('#page_width').val((width-300)/3);
     $('#voiceread_text').css( "width", width + "px" );
 
