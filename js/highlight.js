@@ -256,7 +256,7 @@ chrome.storage.sync.get([
           return;
         }
         if (currentWord < wordElements.length - 1) {
-          console.log(autoScroll);
+          //console.log(autoScroll);
           if (autoScroll) {
             $('#voiceread_text')[0].scrollTop += (.075 + (wordElements[currentWord][0].offsetTop + $(wordElements[currentWord]).height() - $('#voiceread_text')[0].scrollTop)*.0025*speechRate)*(fontSize/50) + .0075*(lineSpace/10 + (600-width));
           }
@@ -318,6 +318,7 @@ chrome.storage.sync.get([
 
   var saved;
   function toggleSettingsView() {
+    //console.log("Current font: " + font);
     if (isSettingsViewActive) {
       $( "#voiceread_settings" ).animate({
         width: "0px"
@@ -357,14 +358,23 @@ chrome.storage.sync.get([
     var auto_scroll = $('#auto_scroll').is(':checked');
     autoScroll = auto_scroll;
     var page_width = $('#page_width').val();
+    width = 300 + 3*page_width;
     var char_spacing = $('#char_spacing').val();
+    charSpace = char_spacing;
     var line_spacing = $('#line_spacing').val();
+    lineSpace = line_spacing;
     var font_type = $('#font_type').val();
+    font = font_type; // TODO: change the callback function. 
     var font_size = $('#font_size').val();
+    fontSize = font_size;
     var font_color = $('#font_color').val();
+    fontColor = font_color;
     var background_color = $('#background_color').val();
+    backgroundColor = background_color;
     var highlight_color = $('#highlight_color').val();
+    highlightColor = highlight_color;
     var speech_rate = $('#speech_rate').val();
+    speechRate = speech_rate;
     chrome.storage.sync.set({
       autoScroll: auto_scroll,
       pageWidth: page_width,
@@ -380,7 +390,10 @@ chrome.storage.sync.get([
       // Update status to let user know options were saved.
       var status = $('#status');
       status.html('Options saved.');
-      document.getElementById(idsPerFont[font]).selected = false;
+      var font_options = document.getElementById("font_type").options;
+      for (var option in font_options){
+        option.selected = false;
+      }
       document.getElementById(idsPerFont[font_type]).selected = true;
       setTimeout(function() {
         status.html('');
