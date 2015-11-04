@@ -294,13 +294,18 @@ chrome.storage.sync.get([
       return false;
   });
 
+  var saved;
   function toggleSettingsView() {
     if (isSettingsViewActive) {
       $( "#voiceread_settings" ).animate({
         width: "0px"
       }, 400 );
+      if (!saved) {
+        restore_options();
+      }
       isSettingsViewActive = false;
     } else {
+      saved = false;
       $( "#voiceread_settings" ).animate({
         width: "300px"
       }, 400 );  
@@ -324,6 +329,7 @@ chrome.storage.sync.get([
 
   // Saves options to chrome.storage
   function save_options() {
+    saved = true;
     var page_width = $('#page_width').val();
     var char_spacing = $('#char_spacing').val();
     var line_spacing = $('#line_spacing').val();
