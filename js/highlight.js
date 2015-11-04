@@ -144,7 +144,7 @@ chrome.storage.sync.get([
       border-left: 30px solid white; \
       border-right: 30px solid white; \
       box-sizing: border-box; \
-  }').appendTo('head');
+  }').appendTo('body');
 
   $('#voiceread').click(function() {
     isVoiceReadActive = false;
