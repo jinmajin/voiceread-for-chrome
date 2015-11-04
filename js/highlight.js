@@ -8,6 +8,12 @@ var charSpace = 5;
 var lineSpace = 10;
 
 var font = "Avenir Next";
+var idsPerFont = new Array();
+idsPerFont["Avenir Next"] = "f1";
+//idsPerFont["Segoe UI"] = "f2";
+idsPerFont["Courier New"] = "f3";
+idsPerFont["Comic Sans MS"] = "f4";
+
 var fontSize = 50;
 var fontColor = '#DDDDDD';
 var highlightColor = '#0000FF';
@@ -61,9 +67,9 @@ chrome.storage.sync.get([
       <input id="line_spacing" type="range" name="line_spacing_points" min="0" max="50" step="1" value="' + lineSpace + '"><br> \
       Font Type: \
       <select id="font_type" name="font_type" value="' + font +'""> \
-        <option value="Avenir Next">Avenir Next</option> \
-        <option value="Segoe UI">Segoe UI</option> \
-        <option value="Lucida Grande">Lucida Grande</option> \
+        <option id=' + idsPerFont["Avenir Next"] + ' value="Avenir Next">Avenir Next</option> \
+        <option id=' + idsPerFont["Courier New"] + ' value="Courier New">Courier New</option> \
+        <option id=' + idsPerFont["Comic Sans MS"] + ' value="Comic Sans MS">Comic Sans</option> \
       </select><br> \
       Font Size: \
       <input id="font_size" type="range" name="font_size_points" min="5" max="100" step="1" value="' + fontSize + '"><br> \
@@ -150,6 +156,9 @@ chrome.storage.sync.get([
       border-right: 30px solid white; \
       box-sizing: border-box; \
   }').appendTo('body');
+
+  //console.log("Adding selected to " + font + " upon opening.");
+  document.getElementById(idsPerFont[font]).selected = true;
 
   $('#voiceread').click(function() {
     isVoiceReadActive = false;
@@ -371,6 +380,8 @@ chrome.storage.sync.get([
       // Update status to let user know options were saved.
       var status = $('#status');
       status.html('Options saved.');
+      document.getElementById(idsPerFont[font]).selected = false;
+      document.getElementById(idsPerFont[font_type]).selected = true;
       setTimeout(function() {
         status.html('');
       }, 750);
