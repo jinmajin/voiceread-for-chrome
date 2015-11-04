@@ -151,7 +151,7 @@ chrome.storage.sync.get([
       border-left: 30px solid white; \
       border-right: 30px solid white; \
       box-sizing: border-box; \
-  }').appendTo('head');
+  }').appendTo('body');
 
   console.log("Adding selected to " + font + " upon opening.");
   //$('#' + idsPerFont[font]).attr('selected', true);
@@ -305,13 +305,18 @@ chrome.storage.sync.get([
       return false;
   });
 
+  var saved;
   function toggleSettingsView() {
     if (isSettingsViewActive) {
       $( "#voiceread_settings" ).animate({
         width: "0px"
       }, 400 );
+      if (!saved) {
+        restore_options();
+      }
       isSettingsViewActive = false;
     } else {
+      saved = false;
       $( "#voiceread_settings" ).animate({
         width: "300px"
       }, 400 );  
@@ -335,6 +340,7 @@ chrome.storage.sync.get([
 
   // Saves options to chrome.storage
   function save_options() {
+    saved = true;
     var page_width = $('#page_width').val();
     var char_spacing = $('#char_spacing').val();
     var line_spacing = $('#line_spacing').val();
