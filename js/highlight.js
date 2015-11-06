@@ -126,7 +126,6 @@ chrome.storage.sync.get([
       box-sizing: border-box; \
   }').appendTo('body');
 
-
   $('body').prepend('<div id="voiceread_container"><div id="voiceread"><div id="voiceread_text"></div><div id="voiceread_controls" class="pause"></div></div><div id="voiceread_settings"> \
     <h2>Visual Settings</h2> \
     <form> \
@@ -155,6 +154,8 @@ chrome.storage.sync.get([
     </form> \
     <h2>Audio Settings</h2> \
     <form> \
+      Voice: \
+      <select id="voice_name" name="voice_name" value="' + voiceName +'""></select><br> \
       Speech Rate: \
       <input id="speech_rate" type="range" name="speech_rate_points" min="100" max="600" value="' + (speechRate * 200) + '"> \
       <span id="speech_rate_value">500wpm</span> \
@@ -185,7 +186,7 @@ chrome.storage.sync.get([
     speechSynthesis.cancel();
   });
 
-  $( window ).unload(function() {
+  $(window).unload(function() {
     speechSynthesis.cancel();
   });
 
@@ -285,8 +286,17 @@ chrome.storage.sync.get([
     currentWord++;
   }
 
+  // Fetch the list of English voices and populate the voice options. 
   speechSynthesis.onvoiceschanged = function() {
     voices = speechSynthesis.getVoices().filter(isLocalEnglish);
+    var voiceNameSelection = document.getElementById('voice_name');
+    voices.forEach(function(voice, i) {
+      var option = document.createElement('option');
+      option.value = voice.name;
+      option.innerHTML = voice.name;
+      if (voice.name == voiceName) { option.selected = true; }
+      voiceNameSelection.appendChild(option);
+    });
   }
 
   function isLocalEnglish(element, index, array) {
@@ -324,7 +334,6 @@ chrome.storage.sync.get([
         width: "0px"
       }, 400 );
       if (!saved) {
-        console.log("here");
         restore_options();
       }
       isSettingsViewActive = false;
@@ -386,6 +395,8 @@ chrome.storage.sync.get([
     highlightColor = highlight_color;
     var speech_rate = $('#speech_rate').val();
     speechRate = speech_rate/200;
+    var voice_name = $('#voice_name').val();
+    voiceName = voice_name;
     restoreUtterance();
     chrome.storage.sync.set({
       autoScroll: auto_scroll,
@@ -398,7 +409,7 @@ chrome.storage.sync.get([
       backgroundColor: background_color,
       highlightColor: highlight_color,
       speechRate: speech_rate,
-      voiceName: 'Karen'
+      voiceName: voice_name
     }, function() {
       // Update status to let user know options were saved.
       var status = $('#status');
@@ -445,6 +456,10 @@ chrome.storage.sync.get([
     $('#speech_rate').val(oldSpeechRate * 200);
     speechRate = oldSpeechRate;
     $('#speech_rate_value').html($('#speech_rate').val() + 'wpm');
+
+    $('#voice_name').val(oldVoiceName);
+    voiceName = oldVoiceName;
+
     restoreUtterance();
   }
 
@@ -457,7 +472,6 @@ chrome.storage.sync.get([
     if (voices.length > 0) {
       utterance.voice = voices.filter(function(voice) {return voice.name == voiceName})[0];
     }
-    console.log("utterance restored");
   }
 
   $('#save').click(save_options);
@@ -504,4 +518,10 @@ chrome.storage.sync.get([
     speechRate = new_speech_rate/200;
     changeAndPlayVoice();
   });
+  $('#voice_name').change(function() {
+    var new_voice_name = $('#voice_name').val();
+    voiceName = new_voice_name;
+    changeAndPlayVoice();
+  })
+
 });
