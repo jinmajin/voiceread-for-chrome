@@ -56,43 +56,7 @@ chrome.storage.sync.get([
     autoScroll = settings.autoScroll;
   } 
 
-  $('body').prepend('<div id="voiceread_container"><div id="voiceread"><div id="voiceread_text"></div><div id="voiceread_controls" class="pause"></div></div><div id="voiceread_settings"> \
-    <h2>Visual Settings</h2> \
-    <form> \
-      Width: \
-      <input id="page_width" type="range" name="width_points" min="0" max="100" step="10" value="' + ((width - 300)/3) + '"><br> \
-      Character Spacing: \
-      <input id="char_spacing" type="range" name="char_spacing_points" min="0" max="10" step="1" value="' + charSpace + '"><br> \
-      Line Spacing: \
-      <input id="line_spacing" type="range" name="line_spacing_points" min="0" max="50" step="1" value="' + lineSpace + '"><br> \
-      Font Type: \
-      <select id="font_type" name="font_type" value="' + font +'""> \
-        <option id=' + idsPerFont["Avenir Next"] + ' value="Avenir Next">Avenir Next</option> \
-        <option id=' + idsPerFont["Courier New"] + ' value="Courier New">Courier New</option> \
-        <option id=' + idsPerFont["Comic Sans MS"] + ' value="Comic Sans MS">Comic Sans</option> \
-      </select><br> \
-      Font Size: \
-      <input id="font_size" type="range" name="font_size_points" min="5" max="100" step="1" value="' + fontSize + '"><br> \
-      Font Color: \
-      <input id="font_color" type="color" name="font_color_value" value="' + fontColor + '"><br> \
-      Background Color: \
-      <input id="background_color" type="color" name="background_color_value" value="' + backgroundColor + '"><br> \
-      Highlight Color: \
-      <input id="highlight_color" type="color" name="highlight_color_value" value="' + highlightColor + '"><br> \
-      Auto Scroll: \
-      <input id="auto_scroll" type="checkbox" name="auto_scroll_value" ' + (autoScroll ? 'checked' : '') + '><br> \
-    </form> \
-    <h2>Audio Settings</h2> \
-    <form> \
-      Speech Rate: \
-      <input id="speech_rate" type="range" name="speech_rate_points" min="100" max="600" value="' + (speechRate * 200) + '"> \
-      <span id="speech_rate_value">500wpm</span> \
-    </form> \
-    <div id="status"></div> \
-    <button id="cancel">Cancel</button> \
-    <button id="save">Save</button> \
-  </div></div>');
-  $('<style>').prop('type', 'text/css').html(' \
+    $('<style>').prop('type', 'text/css').html(' \
     #voiceread_container { \
       position: fixed; \
       left: 0; \
@@ -156,6 +120,44 @@ chrome.storage.sync.get([
       border-right: 30px solid white; \
       box-sizing: border-box; \
   }').appendTo('body');
+
+
+  $('body').prepend('<div id="voiceread_container"><div id="voiceread"><div id="voiceread_text"></div><div id="voiceread_controls" class="pause"></div></div><div id="voiceread_settings"> \
+    <h2>Visual Settings</h2> \
+    <form> \
+      Width: \
+      <input id="page_width" type="range" name="width_points" min="0" max="100" step="10" value="' + ((width - 300)/3) + '"><br> \
+      Character Spacing: \
+      <input id="char_spacing" type="range" name="char_spacing_points" min="0" max="10" step="1" value="' + charSpace + '"><br> \
+      Line Spacing: \
+      <input id="line_spacing" type="range" name="line_spacing_points" min="0" max="50" step="1" value="' + lineSpace + '"><br> \
+      Font Type: \
+      <select id="font_type" name="font_type" value="' + font +'""> \
+        <option id=' + idsPerFont["Avenir Next"] + ' value="Avenir Next">Avenir Next</option> \
+        <option id=' + idsPerFont["Courier New"] + ' value="Courier New">Courier New</option> \
+        <option id=' + idsPerFont["Comic Sans MS"] + ' value="Comic Sans MS">Comic Sans</option> \
+      </select><br> \
+      Font Size: \
+      <input id="font_size" type="range" name="font_size_points" min="5" max="100" step="1" value="' + fontSize + '"><br> \
+      Font Color: \
+      <input id="font_color" type="color" name="font_color_value" value="' + fontColor + '"><br> \
+      Background Color: \
+      <input id="background_color" type="color" name="background_color_value" value="' + backgroundColor + '"><br> \
+      Highlight Color: \
+      <input id="highlight_color" type="color" name="highlight_color_value" value="' + highlightColor + '"><br> \
+      Auto Scroll: \
+      <input id="auto_scroll" type="checkbox" name="auto_scroll_value" ' + (autoScroll ? 'checked' : '') + '><br> \
+    </form> \
+    <h2>Audio Settings</h2> \
+    <form> \
+      Speech Rate: \
+      <input id="speech_rate" type="range" name="speech_rate_points" min="100" max="600" value="' + (speechRate * 200) + '"> \
+      <span id="speech_rate_value">500wpm</span> \
+    </form> \
+    <div id="status"></div> \
+    <button id="cancel">Cancel</button> \
+    <button id="save">Save</button> \
+  </div></div>');
 
   //console.log("Adding selected to " + font + " upon opening.");
   document.getElementById(idsPerFont[font]).selected = true;
