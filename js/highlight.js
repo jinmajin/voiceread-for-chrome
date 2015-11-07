@@ -102,6 +102,7 @@ chrome.storage.sync.get([
       line-height: ' + (parseInt(fontSize) + parseInt(lineSpace)) + 'px; \
       overflow-y: scroll; \
       margin: auto; \
+      word-wrap: break-word; \
     } \
     .highlighted { \
       background-color: ' + highlightColor + '; \
@@ -234,7 +235,6 @@ chrome.storage.sync.get([
   function openHighlightedText(text) {
     if (text) {
       $('#voiceread_text').empty();
-      $('#voiceread_text')[0].scrollTop = 0;
       words = text.split(/\s+/);
       for(var i = 0; i < words.length; i++) {
         var word = $('<span />').attr('word', i).html(words[i]);
@@ -250,6 +250,7 @@ chrome.storage.sync.get([
         utterance.voice = voices.filter(function(voice) {return voice.name == voiceName})[0];
       }
       $('#voiceread_container').show();
+      $('#voiceread_text')[0].scrollTop = 0;
       isVoiceReadActive = true;
       document.body.style.overflow = 'hidden';
       speechSynthesis.speak(utterance);
@@ -258,15 +259,15 @@ chrome.storage.sync.get([
           return;
         }
         if (currentWord < wordElements.length - 1) {
-          //console.log(autoScroll);
           if (autoScroll) {
             $('#voiceread_text')[0].scrollTop += (.075 + (wordElements[currentWord][0].offsetTop + $(wordElements[currentWord]).height() - $('#voiceread_text')[0].scrollTop)*.0025*speechRate)*(fontSize/50) + .0075*(lineSpace/10 + (600-width));
           }
-          if (wordElements[currentWord][0].getBoundingClientRect().bottom > (height - parseInt(lineSpace))) {
+          if (wordElements[currentWord][0].getBoundingClientRect().bottom > height ||
+            wordElements[currentWord][0].getBoundingClientRect().top < parseInt(lineSpace)) {
             speechSynthesis.pause();
-            wordElements[currentWord][0].scrollIntoView(true, {behavior: "smooth"});
+            wordElements[currentWord][0].scrollIntoView(true);
             if (wordElements[currentWord][0].getBoundingClientRect().bottom < (parseInt(lineSpace) + parseInt(fontSize))) {
-              $('#voiceread_text')[0].scrollTop -= height/2;
+              $('#voiceread_text')[0].scrollTop -= parseInt(lineSpace) + parseInt(fontSize);
             }
             speechSynthesis.resume();
           }
@@ -316,7 +317,7 @@ chrome.storage.sync.get([
     }
   });
 
-  $('#voiceread').bind('mousewheel', function(event) {
+  $('#voiceread_text').bind('mousewheel', function(event) {
     if (event.originalEvent.wheelDelta >= 0 && playing) {
       togglePlaying();
     }
