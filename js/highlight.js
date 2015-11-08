@@ -61,7 +61,11 @@ chrome.storage.sync.get([
     autoScroll = settings.autoScroll;
   } 
 
-    $('<style>').prop('type', 'text/css').html(' \
+  if ($('head').length < 1) {
+
+  }
+
+  $('<style>').prop('type', 'text/css').html(' \
     #voiceread_container { \
       position: fixed; \
       left: 0; \
@@ -125,7 +129,7 @@ chrome.storage.sync.get([
       border-left: 30px solid white; \
       border-right: 30px solid white; \
       box-sizing: border-box; \
-  }').appendTo('body');
+  }').prependTo('body');
 
   $('body').prepend('<div id="voiceread_container"><div id="voiceread"><div id="voiceread_text"></div><div id="voiceread_controls" class="pause"></div></div><div id="voiceread_settings"> \
     <h2>Visual Settings</h2> \
@@ -159,7 +163,7 @@ chrome.storage.sync.get([
       <select id="voice_name" name="voice_name" value="' + voiceName +'""></select><br> \
       Speech Rate: \
       <input id="speech_rate" type="range" name="speech_rate_points" min="100" max="600" value="' + (speechRate * 200) + '"> \
-      <span id="speech_rate_value">500wpm</span> \
+      <span id="speech_rate_value">' + (speechRate * 200) + 'wpm</span> \
     </form> \
     <div id="status"></div> \
     <button id="cancel">Cancel</button> \
