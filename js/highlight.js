@@ -26,7 +26,7 @@ var oldSpeechRate = speechRate;
 var voiceName = 'Karen';
 var oldVoiceName = 'Karen';
 
-var opacity = 1;
+var opacity = 90;
 
 var isVoiceReadActive = false;
 var isSettingsViewActive = false;
@@ -43,7 +43,8 @@ chrome.storage.sync.get([
   'backgroundColor',    
   'highlightColor', 
   'speechRate',
-  'voiceName'
+  'voiceName',
+  'pageOpacity'
 ], function(settings) {
   if (Object.keys(settings).length > 0) {
     width = 300 + parseInt(settings.pageWidth)*3;
@@ -59,11 +60,12 @@ chrome.storage.sync.get([
     voiceName = settings.voiceName;
     oldVoiceName = voiceName;
     autoScroll = settings.autoScroll;
-    opacity = settings.opacity;
+    opacity = settings.pageOpacity;
   } 
 
+  var head = 'head'
   if ($('head').length < 1) {
-
+    head = 'body';
   }
 
   $('<style>').prop('type', 'text/css').html(' \
@@ -130,13 +132,13 @@ chrome.storage.sync.get([
       border-left: 30px solid white; \
       border-right: 30px solid white; \
       box-sizing: border-box; \
-  }').prependTo('body');
+  }').prependTo(head);
 
   $('body').prepend('<div id="voiceread_container"><div id="voiceread"><div id="voiceread_text"></div><div id="voiceread_controls" class="pause"></div></div><div id="voiceread_settings"> \
     <h2>Visual Settings</h2> \
     <form> \
       Opacity: \
-      <input id="page_opacity" type="range" name="opacity_points" min="0" max="1" step=".1" value="' + opacity  + '"><br> \
+      <input id="page_opacity" type="range" min="0" max="1" step=".1" value="' + opacity + '"><br> \
       Width: \
       <input id="page_width" type="range" name="width_points" min="0" max="100" step="10" value="' + ((width - 300)/3) + '"><br> \
       Character Spacing: \
@@ -266,13 +268,14 @@ chrome.storage.sync.get([
           return;
         }
         if (currentWord < wordElements.length - 1) {
+          var bottom = wordElements[currentWord][0].getBoundingClientRect().bottom;
           if (autoScroll) {
-            $('#voiceread_text')[0].scrollTop += (.075 + (wordElements[currentWord][0].offsetTop + $(wordElements[currentWord]).height()*2 - $('#voiceread_text')[0].scrollTop)*.0025*speechRate)*(fontSize/50) + .0075*(lineSpace/10 + (600-width));
+            $('#voiceread_text')[0].scrollTop += (.1 + (bottom + parseInt(lineSpace))*.0025*speechRate)*(fontSize/50) + .0075*(lineSpace/10 + (600-width));
           }
-          if (wordElements[currentWord+1][0].getBoundingClientRect().bottom > height) {
+          if (bottom > height) {
             speechSynthesis.pause();
-            wordElements[currentWord][0].scrollIntoView(true);
-            if (wordElements[currentWord][0].getBoundingClientRect().bottom < (parseInt(lineSpace) + parseInt(fontSize))) {
+            wordElements[currentWord-1][0].scrollIntoView(true);
+            if (bottom < (parseInt(lineSpace) + parseInt(fontSize))) {
               $('#voiceread_text')[0].scrollTop -= parseInt(lineSpace) + parseInt(fontSize);
             }
             speechSynthesis.resume();
@@ -408,6 +411,7 @@ chrome.storage.sync.get([
     voiceName = voice_name;
     restoreUtterance();
     chrome.storage.sync.set({
+      pageOpacity: new_opacity,
       autoScroll: auto_scroll,
       pageWidth: page_width,
       charSpacing: char_spacing,
@@ -419,7 +423,6 @@ chrome.storage.sync.get([
       highlightColor: highlight_color,
       speechRate: speech_rate,
       voiceName: voice_name,
-      opacity: new_opacity,
     }, function() {
       // Update status to let user know options were saved.
       var status = $('#status');
@@ -490,6 +493,9 @@ chrome.storage.sync.get([
   $('#cancel').click(restore_options);
 
   // Settings Listeners
+  $('#page_opacity').change(function() {
+    $('#voiceread_container').css( "background-color", "rgba(0,0,0," + $(this).val() + ")" );
+  });
   $('#page_width').change(function() {
     var new_width = 300 + parseInt($(this).val())*3;
     $('#voiceread_text').css( "width", new_width + "px" );
@@ -509,7 +515,7 @@ chrome.storage.sync.get([
   $('#font_size').change(function() {
     var new_font_size = parseInt($(this).val());
     $('#voiceread').css( "font-size", new_font_size + "px" );
-    var new_line_spacing = parseInt($('#font_size').val()) + parseInt($(this).val());
+    var new_line_spacing = parseInt($('#line_spacing').val()) + parseInt($(this).val());
     $('#voiceread_text').css( "line-height", new_line_spacing + "px" );
   });
   $('#font_color').change(function() {
