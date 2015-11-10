@@ -263,21 +263,28 @@ chrome.storage.sync.get([
       isVoiceReadActive = true;
       document.body.style.overflow = 'hidden';
       speechSynthesis.speak(utterance);
+      var residual = 0;
       interval = setInterval(function(){
         if (!playing) {
           return;
         }
         if (currentWord < wordElements.length - 1) {
-          var bottom = wordElements[currentWord][0].getBoundingClientRect().bottom;
+          var bottom = wordElements[currentWord + 1][0].getBoundingClientRect().bottom;
           if (autoScroll) {
-            $('#voiceread_text')[0].scrollTop += (.1 + (bottom + parseInt(lineSpace))*.0025*speechRate)*(fontSize/50) + .0075*(lineSpace/10 + (600-width));
+            var increment = (.075 + (bottom + parseInt(lineSpace))*.0025*speechRate)*(fontSize/50) + .0075*(lineSpace/10 + (600-width));
+            if (increment > 1) {
+              $('#voiceread_text')[0].scrollTop += increment;
+            } else {
+              residual += increment;
+              if (residual > 1) {
+                $('#voiceread_text')[0].scrollTop += residual;
+                residual = 0;
+              }
+            }
           }
           if (bottom > height) {
             speechSynthesis.pause();
             wordElements[currentWord-1][0].scrollIntoView(true);
-            if (bottom < (parseInt(lineSpace) + parseInt(fontSize))) {
-              $('#voiceread_text')[0].scrollTop -= parseInt(lineSpace) + parseInt(fontSize);
-            }
             speechSynthesis.resume();
           }
         }
