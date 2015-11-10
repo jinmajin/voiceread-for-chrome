@@ -59,6 +59,7 @@ chrome.storage.sync.get([
     voiceName = settings.voiceName;
     oldVoiceName = voiceName;
     autoScroll = settings.autoScroll;
+    opacity = settings.opacity;
   } 
 
   if ($('head').length < 1) {
@@ -134,6 +135,8 @@ chrome.storage.sync.get([
   $('body').prepend('<div id="voiceread_container"><div id="voiceread"><div id="voiceread_text"></div><div id="voiceread_controls" class="pause"></div></div><div id="voiceread_settings"> \
     <h2>Visual Settings</h2> \
     <form> \
+      Opacity: \
+      <input id="page_opacity" type="range" name="opacity_points" min="0" max="1" step=".1" value="' + opacity  + '"><br> \
       Width: \
       <input id="page_width" type="range" name="width_points" min="0" max="100" step="10" value="' + ((width - 300)/3) + '"><br> \
       Character Spacing: \
@@ -266,8 +269,7 @@ chrome.storage.sync.get([
           if (autoScroll) {
             $('#voiceread_text')[0].scrollTop += (.075 + (wordElements[currentWord][0].offsetTop + $(wordElements[currentWord]).height()*2 - $('#voiceread_text')[0].scrollTop)*.0025*speechRate)*(fontSize/50) + .0075*(lineSpace/10 + (600-width));
           }
-          if (wordElements[currentWord][0].getBoundingClientRect().bottom > height + parseInt(lineSpace) ||
-            wordElements[currentWord][0].getBoundingClientRect().top < 0) {
+          if (wordElements[currentWord+1][0].getBoundingClientRect().bottom > height) {
             speechSynthesis.pause();
             wordElements[currentWord][0].scrollIntoView(true);
             if (wordElements[currentWord][0].getBoundingClientRect().bottom < (parseInt(lineSpace) + parseInt(fontSize))) {
@@ -380,6 +382,8 @@ chrome.storage.sync.get([
   // Saves options to chrome.storage
   function save_options() {
     saved = true;
+    var new_opacity = $('#page_opacity').val();
+    opacity = new_opacity;
     var auto_scroll = $('#auto_scroll').is(':checked');
     autoScroll = auto_scroll;
     var page_width = $('#page_width').val();
@@ -414,7 +418,8 @@ chrome.storage.sync.get([
       backgroundColor: background_color,
       highlightColor: highlight_color,
       speechRate: speech_rate,
-      voiceName: voice_name
+      voiceName: voice_name,
+      opacity: new_opacity,
     }, function() {
       // Update status to let user know options were saved.
       var status = $('#status');
@@ -432,6 +437,8 @@ chrome.storage.sync.get([
  
   function restore_options() {
     $('#auto_scroll').prop('checked', autoScroll);
+
+    $('#page_opacity').val(opacity);
 
     $('#page_width').val((width-300)/3);
     $('#voiceread_text').css( "width", width + "px" );
