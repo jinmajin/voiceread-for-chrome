@@ -228,7 +228,7 @@ chrome.storage.sync.get([
 
   function changeAndPlayVoice() {
     speechSynthesis.cancel();
-    utterance = new SpeechSynthesisUtterance('This is how the new speech synthesis works.');
+    utterance = new SpeechSynthesisUtterance('This is what the new voice will sound like.');
     utterance.rate = speechRate;
     if (voices.length > 0) {
       utterance.voice = voices.filter(function(voice) {return voice.name == voiceName})[0];
@@ -264,10 +264,10 @@ chrome.storage.sync.get([
         }
         if (currentWord < wordElements.length - 1) {
           if (autoScroll) {
-            $('#voiceread_text')[0].scrollTop += (.075 + (wordElements[currentWord][0].offsetTop + $(wordElements[currentWord]).height() - $('#voiceread_text')[0].scrollTop)*.0025*speechRate)*(fontSize/50) + .0075*(lineSpace/10 + (600-width));
+            $('#voiceread_text')[0].scrollTop += (.075 + (wordElements[currentWord][0].offsetTop + $(wordElements[currentWord]).height()*2 - $('#voiceread_text')[0].scrollTop)*.0025*speechRate)*(fontSize/50) + .0075*(lineSpace/10 + (600-width));
           }
-          if (wordElements[currentWord][0].getBoundingClientRect().bottom > height ||
-            wordElements[currentWord][0].getBoundingClientRect().top < parseInt(lineSpace)) {
+          if (wordElements[currentWord][0].getBoundingClientRect().bottom > height + parseInt(lineSpace) ||
+            wordElements[currentWord][0].getBoundingClientRect().top < 0) {
             speechSynthesis.pause();
             wordElements[currentWord][0].scrollIntoView(true);
             if (wordElements[currentWord][0].getBoundingClientRect().bottom < (parseInt(lineSpace) + parseInt(fontSize))) {
@@ -309,7 +309,7 @@ chrome.storage.sync.get([
   }
 
   $(document).keydown(function(e) {
-    if (String.fromCharCode(e.which) === triggerKey || String.fromCharCode(e.which) === triggerKey.toUpperCase()) {
+    if (e.altKey && (String.fromCharCode(e.which) === triggerKey || String.fromCharCode(e.which) === triggerKey.toUpperCase())) {
       var text = window.getSelection().toString();
       openHighlightedText(text);
     } 
