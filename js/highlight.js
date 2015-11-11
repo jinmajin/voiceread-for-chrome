@@ -335,6 +335,9 @@ chrome.storage.sync.get([
       }
       toggleSettingsView();
     }
+    if (e.which == 32) {
+      togglePlaying();
+    }
   });
 
   $('#voiceread_text').bind('mousewheel', function(event) {
