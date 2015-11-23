@@ -10,7 +10,6 @@ var lineSpace = 10;
 var font = "Avenir Next";
 var idsPerFont = new Array();
 idsPerFont["Avenir Next"] = "f1";
-//idsPerFont["Segoe UI"] = "f2";
 idsPerFont["Courier New"] = "f3";
 idsPerFont["Comic Sans MS"] = "f4";
 
@@ -325,7 +324,7 @@ chrome.storage.sync.get([
   }
 
   $(document).keydown(function(e) {
-    if (e.altKey && (String.fromCharCode(e.which) === triggerKey || String.fromCharCode(e.which) === triggerKey.toUpperCase())) {
+    if (String.fromCharCode(e.which) === triggerKey || String.fromCharCode(e.which) === triggerKey.toUpperCase()) {
       var text = window.getSelection().toString();
       openHighlightedText(text);
     } 
