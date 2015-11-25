@@ -137,14 +137,13 @@ chrome.storage.sync.get([
   $('body').prepend('<div id="voiceread_container"><div id="voiceread"><div id="voiceread_text"></div><div id="voiceread_controls" class="pause"></div></div><div id="voiceread_settings"> \
     <h2>Visual Settings</h2> \
     <form> \
-      Opacity: \
-      <input id="page_opacity" type="range" min="0" max="1" step=".1" value="' + opacity + '"><br> \
       Width: \
       <input id="page_width" type="range" name="width_points" min="0" max="100" step="10" value="' + ((width - 300)/3) + '"><br> \
       Character Spacing: \
       <input id="char_spacing" type="range" name="char_spacing_points" min="0" max="10" step="1" value="' + charSpace + '"><br> \
       Line Spacing: \
       <input id="line_spacing" type="range" name="line_spacing_points" min="0" max="50" step="1" value="' + lineSpace + '"><br> \
+      <hr> \
       Font Type: \
       <select id="font_type" name="font_type" value="' + font +'""> \
         <option id=' + idsPerFont["Avenir Next"] + ' value="Avenir Next">Avenir Next</option> \
@@ -155,10 +154,14 @@ chrome.storage.sync.get([
       <input id="font_size" type="range" name="font_size_points" min="5" max="100" step="1" value="' + fontSize + '"><br> \
       Font Color: \
       <input id="font_color" type="color" name="font_color_value" value="' + fontColor + '"><br> \
+      <hr> \
       Background Color: \
       <input id="background_color" type="color" name="background_color_value" value="' + backgroundColor + '"><br> \
       Highlight Color: \
       <input id="highlight_color" type="color" name="highlight_color_value" value="' + highlightColor + '"><br> \
+      Opacity: \
+      <input id="page_opacity" type="range" min="0" max="1" step=".1" value="' + opacity + '"><br> \
+      <hr> \
       Auto Scroll: \
       <input id="auto_scroll" type="checkbox" name="auto_scroll_value" ' + (autoScroll ? 'checked' : '') + '><br> \
     </form> \
@@ -170,12 +173,12 @@ chrome.storage.sync.get([
       <input id="speech_rate" type="range" name="speech_rate_points" min="100" max="600" value="' + (speechRate * 200) + '"> \
       <span id="speech_rate_value">' + (speechRate * 200) + 'wpm</span> \
     </form> \
+    <hr> \
     <div id="status"></div> \
     <button id="cancel">Cancel</button> \
     <button id="save">Save</button> \
   </div></div>');
 
-  //console.log("Adding selected to " + font + " upon opening.");
   document.getElementById(idsPerFont[font]).selected = true;
 
   $('#voiceread').click(function() {
@@ -391,6 +394,7 @@ chrome.storage.sync.get([
         $('#voiceread_controls').addClass('pause');
         playing = true;
       }
+    }
     } else {
       alert ('Please close settings before clicking play.');
     }
@@ -455,8 +459,6 @@ chrome.storage.sync.get([
   function restore_options() {
     $('#auto_scroll').prop('checked', autoScroll);
 
-    $('#page_opacity').val(opacity);
-
     $('#page_width').val((width-300)/3);
     $('#voiceread_text').css( "width", width + "px" );
 
@@ -481,6 +483,9 @@ chrome.storage.sync.get([
 
     $('#highlight_color').val(highlightColor);
     $('.highlighted').css( "background-color", highlightColor );
+
+    $('#page_opacity').val(opacity);
+    $('#voiceread_container').css( "background-color", "rgba(0,0,0," + opacity + ")" );
 
     $('#speech_rate').val(oldSpeechRate * 200);
     speechRate = oldSpeechRate;
@@ -507,9 +512,6 @@ chrome.storage.sync.get([
   $('#cancel').click(restore_options);
 
   // Settings Listeners
-  $('#page_opacity').change(function() {
-    $('#voiceread_container').css( "background-color", "rgba(0,0,0," + $(this).val() + ")" );
-  });
   $('#page_width').change(function() {
     var new_width = 300 + parseInt($(this).val())*3;
     $('#voiceread_text').css( "width", new_width + "px" );
@@ -543,6 +545,9 @@ chrome.storage.sync.get([
   $('#highlight_color').change(function() {
     var new_highlight_color = $(this).val();
     $('.highlighted').css( "background-color", new_highlight_color );
+  });
+  $('#page_opacity').change(function() {
+    $('#voiceread_container').css( "background-color", "rgba(0,0,0," + $(this).val() + ")" );
   });
   $('#speech_rate').on('input', function() {
     var new_speech_rate = $('#speech_rate').val();
