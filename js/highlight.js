@@ -339,9 +339,14 @@ chrome.storage.sync.get([
       }
       toggleSettingsView();
     }
-    if (e.which == 32) {
+    if (e.which == 32 && isVoiceReadActive) {
       togglePlaying();
     }
+
+    if (e.which == 32 && isVoiceReadActive) {
+      togglePlaying();
+    }
+
   });
 
   $('#voiceread_text').bind('mousewheel', function(event) {
@@ -376,11 +381,13 @@ chrome.storage.sync.get([
 
   function togglePlaying(){
     if (playing) {
+      makeSettingsEditable();
       speechSynthesis.pause();
       $('#voiceread_controls').removeClass('pause');
       $('#voiceread_controls').addClass('play');
       playing = false;
     } else {
+      makeSettingsUneditable();
       if (isUtteranceRestored) {
         wordElements[previousWord].removeClass('highlighted');
         wordElements[previousWord].css('background-color', '');
@@ -542,6 +549,36 @@ chrome.storage.sync.get([
     if (voices.length > 0) {
       utterance.voice = voices.filter(function(voice) {return voice.name == voiceName})[0];
     }
+  }
+
+  function makeSettingsEditable() {
+    $('#auto_scroll').prop("disabled", false);
+    $('#page_width').prop("readonly", false);
+    $('#char_spacing').prop("readonly", false);
+    $('#line_spacing').prop("readonly", false);
+    $('#font_type').prop("disabled", false);
+    $('#font_size').prop("readonly", false);
+    $('#font_color').prop("disabled", false);
+    $('#background_color').prop("disabled", false);
+    $('#highlight_color').prop("disabled", false);
+    $('#page_opacity').prop("readonly", false);
+    $('#speech_rate').prop("readonly", false);
+    $('#voice_name').prop("disabled", false);
+  }
+
+  function makeSettingsUneditable() {
+    $('#auto_scroll').prop("disabled", "disabled");
+    $('#page_width').prop("readonly", true);
+    $('#char_spacing').prop("readonly", true);
+    $('#line_spacing').prop("readonly", true);
+    $('#font_type').prop("disabled", "disabled");
+    $('#font_size').prop("readonly", true);
+    $('#font_color').prop("disabled", "disabled")
+    $('#background_color').prop("disabled", "disabled");
+    $('#highlight_color').prop("disabled", "disabled");
+    $('#page_opacity').prop("readonly", true);
+    $('#speech_rate').prop("readonly", true);
+    $('#voice_name').prop("disabled", "disabled");
   }
 
   $('#save').click(save_options);
