@@ -251,17 +251,22 @@ chrome.storage.sync.get([
         wordElements.push(word);
         word.on('click', rewind);
       }
-      utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = speechRate;
-      utterance.onboundary = incrementWord;
-      if (voices.length > 0) {
+      var port = chrome.runtime.connect({name: "voiceread"});
+      port.postMessage({selected_text : text});
+      port.onMessage.addListener(function(msg) {
+        console.log(msg);
+      });
+      //utterance = new SpeechSynthesisUtterance(text);
+      //utterance.rate = speechRate;
+      //utterance.onboundary = incrementWord;
+      /*if (voices.length > 0) {
         utterance.voice = voices.filter(function(voice) {return voice.name == voiceName})[0];
-      }
+      }*/
       $('#voiceread_container').show();
       $('#voiceread_text')[0].scrollTop = 0;
       isVoiceReadActive = true;
       document.body.style.overflow = 'hidden';
-      speechSynthesis.speak(utterance);
+      //speechSynthesis.speak(utterance);
       var residual = 0;
       interval = setInterval(function(){
         if (!playing) {
@@ -283,12 +288,12 @@ chrome.storage.sync.get([
           }
           bottom = wordElements[currentWord][0].getBoundingClientRect().bottom;
           if (bottom > height) {
-            speechSynthesis.pause();
+            //speechSynthesis.pause();
             wordElements[currentWord-1][0].scrollIntoView(true);
             if (wordElements[currentWord-1][0].getBoundingClientRect().bottom < (parseInt(lineSpace) + parseInt(fontSize))) {
               $('#voiceread_text')[0].scrollTop -= parseInt(lineSpace) + parseInt(fontSize);
             }
-            speechSynthesis.resume();
+            //speechSynthesis.resume();
           }
         }
       }, 10);

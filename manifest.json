@@ -18,11 +18,14 @@
       ]
     }
   ], 
+  "background" : {
+      "scripts": ["js/background.js"]
+    },
   "permissions": [
     "http://*/*",
     "https://*/*",
     "contextMenus",
-    "tabs",
-    "storage"
+    "storage",
+    "tts"
   ]
 }
