@@ -234,6 +234,21 @@ chrome.storage.sync.get([
     }
   }
 
+  function rewindAfterSpeechRateChange() {
+    speechSynthesis.cancel();
+    highlightWord();
+    utterance = new SpeechSynthesisUtterance(words.slice(currentWord, words.length).join(" "));
+    utterance.rate = speechRate;
+    utterance.onboundary = incrementWord;
+    if (voices.length > 0) {
+      utterance.voice = voices.filter(function(voice) {return voice.name == voiceName})[0];
+    }
+    speechSynthesis.speak(utterance);
+    if (!playing) {
+      togglePlaying();
+    }
+  }
+
   function changeAndPlayVoice() {
     isSpeechSettingsChanged = true;
     speechSynthesis.cancel();
@@ -343,11 +358,49 @@ chrome.storage.sync.get([
       togglePlaying();
     }
 
-    if (e.which == 32 && isVoiceReadActive) {
-      togglePlaying();
+    if (e.which == 190 && isVoiceReadActive) {
+      var isSpeedIncreased = increaseSpeed();
+      if (isSpeedIncreased) {
+        setTimeout(function() { 
+          rewindAfterSpeechRateChange(); 
+        }, 500);
+      }
+    }
+
+    if (e.which == 188 && isVoiceReadActive) {
+      var isSpeedDecreased = decreaseSpeed();
+      if (isSpeedDecreased) {
+        setTimeout(function() { 
+          rewindAfterSpeechRateChange(); 
+        }, 500);
+      }
     }
 
   });
+
+  function increaseSpeed() {
+    var new_speech_rate = speechRate + 0.05;
+    if (new_speech_rate <= 3) {
+      speechRate = new_speech_rate;
+      $('#speech_rate').val(speechRate * 200);
+      $('#speech_rate_value').html($('#speech_rate').val() + 'wpm');
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  function decreaseSpeed() {
+    var new_speech_rate = speechRate - 0.05;
+    if (new_speech_rate >= 0.5) {
+      speechRate = new_speech_rate;
+      $('#speech_rate').val(speechRate * 200);
+      $('#speech_rate_value').html($('#speech_rate').val() + 'wpm');
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   $('#voiceread_text').bind('mousewheel', function(event) {
     if (event.originalEvent.wheelDelta >= 0 && playing) {
