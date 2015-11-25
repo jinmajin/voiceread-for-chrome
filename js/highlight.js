@@ -10,7 +10,6 @@ var lineSpace = 10;
 var font = "Avenir Next";
 var idsPerFont = new Array();
 idsPerFont["Avenir Next"] = "f1";
-//idsPerFont["Segoe UI"] = "f2";
 idsPerFont["Courier New"] = "f3";
 idsPerFont["Comic Sans MS"] = "f4";
 
@@ -30,6 +29,7 @@ var opacity = 90;
 
 var isVoiceReadActive = false;
 var isSettingsViewActive = false;
+var isSpeechSettingsChanged = false;
 
 chrome.storage.sync.get([
   'autoScroll',
@@ -235,6 +235,7 @@ chrome.storage.sync.get([
   }
 
   function changeAndPlayVoice() {
+    isSpeechSettingsChanged = true;
     speechSynthesis.cancel();
     utterance = new SpeechSynthesisUtterance('This is what the new voice will sound like.');
     utterance.rate = speechRate;
@@ -374,12 +375,12 @@ chrome.storage.sync.get([
   }
 
   function togglePlaying(){
-    if (playing){
+    if (playing) {
       speechSynthesis.pause();
       $('#voiceread_controls').removeClass('pause');
       $('#voiceread_controls').addClass('play');
       playing = false;
-    } else if (!isSettingsViewActive){
+    } else {
       if (isUtteranceRestored) {
         wordElements[previousWord].removeClass('highlighted');
         wordElements[previousWord].css('background-color', '');
@@ -389,16 +390,50 @@ chrome.storage.sync.get([
         isUtteranceRestored = false;
         playing = true;        
       } else {
-        speechSynthesis.resume();
-        $('#voiceread_controls').removeClass('play');
-        $('#voiceread_controls').addClass('pause');
-        playing = true;
+        if (isSpeechSettingsChanged) {
+          restoreUtterance();
+          wordElements[previousWord].removeClass('highlighted');
+          wordElements[previousWord].css('background-color', '');
+          speechSynthesis.speak(utterance);
+          $('#voiceread_controls').removeClass('play');
+          $('#voiceread_controls').addClass('pause');
+          isUtteranceRestored = false;
+          playing = true; 
+        } else {
+          speechSynthesis.resume();
+          $('#voiceread_controls').removeClass('play');
+          $('#voiceread_controls').addClass('pause');
+          playing = true;
+        }
       }
     }
-    } else {
-      alert ('Please close settings before clicking play.');
-    }
   };
+
+  // function togglePlaying(){
+  //   if (playing){
+  //     speechSynthesis.pause();
+  //     $('#voiceread_controls').removeClass('pause');
+  //     $('#voiceread_controls').addClass('play');
+  //     playing = false;
+  //   } else if (!isSettingsViewActive){
+  //     if (isUtteranceRestored) {
+  //       wordElements[previousWord].removeClass('highlighted');
+  //       wordElements[previousWord].css('background-color', '');
+  //       speechSynthesis.speak(utterance);
+  //       $('#voiceread_controls').removeClass('play');
+  //       $('#voiceread_controls').addClass('pause');
+  //       isUtteranceRestored = false;
+  //       playing = true;        
+  //     } else {
+  //       speechSynthesis.resume();
+  //       $('#voiceread_controls').removeClass('play');
+  //       $('#voiceread_controls').addClass('pause');
+  //       playing = true;
+  //     }
+  //   } else {
+  //     alert ('Please close settings before clicking play.');
+  //   }
+  // };
 
   // Saves options to chrome.storage
   function save_options() {
@@ -446,7 +481,7 @@ chrome.storage.sync.get([
       var status = $('#status');
       status.html('Options saved.');
       var font_options = document.getElementById("font_type").options;
-      for (var option in font_options){
+      for (var option in font_options) {
         option.selected = false;
       }
       document.getElementById(idsPerFont[font_type]).selected = true;
@@ -499,6 +534,7 @@ chrome.storage.sync.get([
 
   function restoreUtterance() {
     isUtteranceRestored = true;
+    isSpeechSettingsChanged = false;
     speechSynthesis.cancel();
     utterance = new SpeechSynthesisUtterance(words.slice(currentWord, words.length).join(" "));
     utterance.rate = speechRate;
