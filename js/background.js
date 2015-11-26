@@ -6,7 +6,7 @@ chrome.runtime.onConnect.addListener(function(port) {
   	if (msg.type == "speak"){
     	chrome.tts.speak(msg.selected_text,
     		{
-          voiceName: msg.voiceName // 'native', 
+          voiceName: msg.voiceName, // 'native', 
           rate: msg.speech_rate,
     			onEvent: function(event){
             //port.postMessage(event);
