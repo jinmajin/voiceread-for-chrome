@@ -30,6 +30,48 @@ var opacity = 90;
 var isVoiceReadActive = false;
 var isSettingsViewActive = false;
 
+var port = null;
+port = chrome.runtime.connect({name: 'voiceread'});
+port.onMessage.addListener(function(msg) {
+  console.log(msg);
+  if (msg.evt == 'boundary'){
+    incrementWord();
+    console.log(wordElements);    
+  }
+});
+port.onDisconnect.addListener(function(){
+  // open another port and the current one closes. 
+  port = chrome.runtime.connect({name: 'voiceread'});
+  port.onMessage.addListener(function(msg) {
+    if (msg.event == 'boundary'){
+      incrementWord();    
+    }
+  });
+});
+
+
+var voices = [];
+var wordElements = [];
+var currentWord = 0;
+var previousWord = 0;
+var utterance = null;
+var playing = true;
+var isUtteranceRestored = false;
+var words = [];
+var interval;
+
+function highlightWord() {
+  wordElements[previousWord].removeClass('highlighted');
+  wordElements[currentWord].addClass('highlighted');
+}
+
+function incrementWord() {
+  highlightWord();
+  previousWord = currentWord;
+  currentWord++;
+}
+
+
 chrome.storage.sync.get([
   'autoScroll',
   'pageWidth',
@@ -192,39 +234,23 @@ chrome.storage.sync.get([
     clearInterval(interval);
     $('#voiceread_controls').removeClass('play');
     $('#voiceread_controls').addClass('pause');
-    speechSynthesis.cancel();
+    port.postMessage({type: "stop"});
   });
 
   $(window).unload(function() {
-    speechSynthesis.cancel();
+    port.postMessage({type: "stop"});
   });
 
   $('#voiceread_text').click(function(e) {
     return false;
   });
 
-  var voices = [];
-  var wordElements = [];
-  var currentWord = 0;
-  var previousWord = 0;
-  var utterance = null;
-  var playing = true;
-  var isUtteranceRestored = false;
-  var words = [];
-  var interval;
-
   function rewind(evt) {
     var index = ($(evt.target).attr('word'));
-    speechSynthesis.cancel();
+    port.postMessage({type: "stop"});
     currentWord = parseInt(index);
     highlightWord();
-    utterance = new SpeechSynthesisUtterance(words.slice(index, words.length).join(" "));
-    utterance.rate = speechRate;
-    utterance.onboundary = incrementWord;
-    if (voices.length > 0) {
-      utterance.voice = voices.filter(function(voice) {return voice.name == voiceName})[0];
-    }
-    speechSynthesis.speak(utterance);
+    port.postMessage({type: "speak", selected_text: words.slice(index, words.length).join(" ")});
     if (!playing) {
       togglePlaying();
     }
@@ -251,22 +277,11 @@ chrome.storage.sync.get([
         wordElements.push(word);
         word.on('click', rewind);
       }
-      var port = chrome.runtime.connect({name: "voiceread"});
-      port.postMessage({selected_text : text});
-      port.onMessage.addListener(function(msg) {
-        console.log(msg);
-      });
-      //utterance = new SpeechSynthesisUtterance(text);
-      //utterance.rate = speechRate;
-      //utterance.onboundary = incrementWord;
-      /*if (voices.length > 0) {
-        utterance.voice = voices.filter(function(voice) {return voice.name == voiceName})[0];
-      }*/
+      port.postMessage({type: 'speak', selected_text : text});
       $('#voiceread_container').show();
       $('#voiceread_text')[0].scrollTop = 0;
       isVoiceReadActive = true;
       document.body.style.overflow = 'hidden';
-      //speechSynthesis.speak(utterance);
       var residual = 0;
       interval = setInterval(function(){
         if (!playing) {
@@ -288,27 +303,16 @@ chrome.storage.sync.get([
           }
           bottom = wordElements[currentWord][0].getBoundingClientRect().bottom;
           if (bottom > height) {
-            //speechSynthesis.pause();
+            port.postMessage({type: "pause"});
             wordElements[currentWord-1][0].scrollIntoView(true);
             if (wordElements[currentWord-1][0].getBoundingClientRect().bottom < (parseInt(lineSpace) + parseInt(fontSize))) {
               $('#voiceread_text')[0].scrollTop -= parseInt(lineSpace) + parseInt(fontSize);
             }
-            //speechSynthesis.resume();
+            port.postMessage({type: "resume"});
           }
         }
       }, 10);
     }
-  }
-
-  function highlightWord() {
-    wordElements[previousWord].removeClass('highlighted');
-    wordElements[currentWord].addClass('highlighted');
-  }
-
-  function incrementWord() {
-    highlightWord();
-    previousWord = currentWord;
-    currentWord++;
   }
 
   // Fetch the list of English voices and populate the voice options. 
@@ -376,7 +380,7 @@ chrome.storage.sync.get([
 
   function togglePlaying(){
     if (playing){
-      speechSynthesis.pause();
+      port.postMessage({type: 'pause'});
       $('#voiceread_controls').removeClass('pause');
       $('#voiceread_controls').addClass('play');
       playing = false;
@@ -384,13 +388,13 @@ chrome.storage.sync.get([
       if (isUtteranceRestored) {
         wordElements[previousWord].removeClass('highlighted');
         wordElements[previousWord].css('background-color', '');
-        speechSynthesis.speak(utterance);
+        port.postMessage({type: 'speak'});
         $('#voiceread_controls').removeClass('play');
         $('#voiceread_controls').addClass('pause');
         isUtteranceRestored = false;
         playing = true;        
       } else {
-        speechSynthesis.resume();
+        port.postMessage({type: 'resume'});
         $('#voiceread_controls').removeClass('play');
         $('#voiceread_controls').addClass('pause');
         playing = true;
@@ -559,5 +563,4 @@ chrome.storage.sync.get([
     voiceName = new_voice_name;
     changeAndPlayVoice();
   })
-
 });
