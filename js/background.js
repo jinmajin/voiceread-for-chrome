@@ -2,17 +2,15 @@ var lastCharIndex = null;
 
 chrome.runtime.onConnect.addListener(function(port) {
   console.assert(port.name == "voiceread");
-  chrome.tts.getVoices(function(voice_array){
-    port.postMessage({voices: voice_array});
-  });
   port.onMessage.addListener(function(msg) {
   	if (msg.type == "speak"){
     	chrome.tts.speak(msg.selected_text,
     		{
-          voiceName: 'native', 
+          voiceName: msg.voiceName // 'native', 
+          rate: msg.speech_rate,
     			onEvent: function(event){
-            port.postMessage(event);
-    				if (/*event.charIndex != lastCharIndex && (*/event.type == 'word') /*|| event.type == 'sentence') */{
+            //port.postMessage(event);
+    				if (event.charIndex != lastCharIndex && event.type == 'word'){
     					port.postMessage({evt: 'boundary'});
               lastCharIndex = event.charIndex;
             }

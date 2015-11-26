@@ -250,7 +250,7 @@ chrome.storage.sync.get([
     port.postMessage({type: "stop"});
     currentWord = parseInt(index);
     highlightWord();
-    port.postMessage({type: "speak", selected_text: words.slice(index, words.length).join(" ")});
+    port.postMessage({type: "speak", selected_text: words.slice(index, words.length).join(" "), speech_rate: speechRate, voice_name: voiceName});
     if (!playing) {
       togglePlaying();
     }
@@ -277,7 +277,7 @@ chrome.storage.sync.get([
         wordElements.push(word);
         word.on('click', rewind);
       }
-      port.postMessage({type: 'speak', selected_text : text});
+      port.postMessage({type: 'speak', selected_text : text, speech_rate: speechRate, voice_name: voiceName});
       $('#voiceread_container').show();
       $('#voiceread_text')[0].scrollTop = 0;
       isVoiceReadActive = true;
@@ -388,7 +388,7 @@ chrome.storage.sync.get([
       if (isUtteranceRestored) {
         wordElements[previousWord].removeClass('highlighted');
         wordElements[previousWord].css('background-color', '');
-        port.postMessage({type: 'speak'});
+        port.postMessage({type: 'speak', speech_rate: speechRate, voice_name: voiceName});
         $('#voiceread_controls').removeClass('play');
         $('#voiceread_controls').addClass('pause');
         isUtteranceRestored = false;
