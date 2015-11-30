@@ -30,7 +30,6 @@ var isSpeechSettingsChanged = false;
 var port = null;
 port = chrome.runtime.connect({name: 'voiceread'});
 port.onMessage.addListener(function(msg) {
-  console.log(msg);
   if (msg.voices) {
     // populate the voice options. 
     voices = msg.voices;
@@ -427,7 +426,7 @@ chrome.storage.sync.get([
       if (isUtteranceRestored) {
         wordElements[previousWord].removeClass('highlighted');
         wordElements[previousWord].css('background-color', '');
-        port.postMessage({type: 'speak', speech_rate: speechRate, voice_name: voiceName});
+        port.postMessage(utterance);
         $('#voiceread_controls').removeClass('play');
         $('#voiceread_controls').addClass('pause');
         isUtteranceRestored = false;
