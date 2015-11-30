@@ -8,10 +8,6 @@ var charSpace = 5;
 var lineSpace = 10;
 
 var font = "Avenir Next";
-var idsPerFont = new Array();
-idsPerFont["Avenir Next"] = "f1";
-idsPerFont["Courier New"] = "f3";
-idsPerFont["Comic Sans MS"] = "f4";
 
 var fontSize = 50;
 var fontColor = '#DDDDDD';
@@ -35,9 +31,29 @@ var port = null;
 port = chrome.runtime.connect({name: 'voiceread'});
 port.onMessage.addListener(function(msg) {
   console.log(msg);
-  if (msg.evt == 'boundary'){
+  if (msg.voices) {
+    // populate the voice options. 
+    voices = msg.voices;
+    var voiceNameSelection = document.getElementById('voice_name');
+    voices.forEach(function(voice) {
+      var option = document.createElement('option');
+      option.value = voice.voiceName;
+      option.innerHTML = voice.voiceName;
+      if (voice.voiceName == voiceName) { option.selected = true; }
+      voiceNameSelection.appendChild(option);
+    });
+  } else if (msg.fonts) {
+    // populate thing with fonts
+    var fontSelection = document.getElementById('font_type');
+    msg.fonts.forEach(function(font_option) {
+      var option = document.createElement('option');
+      option.value = font_option.displayName;
+      option.innerHTML = font_option.displayName;
+      if (font_option.displayName == font) { option.selected = true; }
+      fontSelection.appendChild(option);
+    });
+  } else if (msg.evt && msg.evt == 'boundary'){
     incrementWord();
-    console.log(wordElements);    
   }
 });
 port.onDisconnect.addListener(function(){
@@ -55,7 +71,7 @@ var voices = [];
 var wordElements = [];
 var currentWord = 0;
 var previousWord = 0;
-var utterance = null;
+var utterance = {};
 var playing = true;
 var isUtteranceRestored = false;
 var words = [];
@@ -187,11 +203,7 @@ chrome.storage.sync.get([
       <input id="line_spacing" type="range" name="line_spacing_points" min="0" max="50" step="1" value="' + lineSpace + '"><br> \
       <hr> \
       Font Type: \
-      <select id="font_type" name="font_type" value="' + font +'""> \
-        <option id=' + idsPerFont["Avenir Next"] + ' value="Avenir Next">Avenir Next</option> \
-        <option id=' + idsPerFont["Courier New"] + ' value="Courier New">Courier New</option> \
-        <option id=' + idsPerFont["Comic Sans MS"] + ' value="Comic Sans MS">Comic Sans</option> \
-      </select><br> \
+      <select id="font_type" name="font_type" value="' + font +'""></select><br> \
       Font Size: \
       <input id="font_size" type="range" name="font_size_points" min="5" max="100" step="1" value="' + fontSize + '"><br> \
       Font Color: \
@@ -220,8 +232,6 @@ chrome.storage.sync.get([
     <button id="cancel">Cancel</button> \
     <button id="save">Save</button> \
   </div></div>');
-
-  document.getElementById(idsPerFont[font]).selected = true;
 
   $('#voiceread').click(function() {
     isVoiceReadActive = false;
@@ -261,15 +271,9 @@ chrome.storage.sync.get([
   }
 
   function rewindAfterSpeechRateChange() {
-    speechSynthesis.cancel();
+    port.postMessage({type: "stop"});
     highlightWord();
-    utterance = new SpeechSynthesisUtterance(words.slice(currentWord, words.length).join(" "));
-    utterance.rate = speechRate;
-    utterance.onboundary = incrementWord;
-    if (voices.length > 0) {
-      utterance.voice = voices.filter(function(voice) {return voice.name == voiceName})[0];
-    }
-    speechSynthesis.speak(utterance);
+    port.postMessage({type: "speak", selected_text: words.slice(currentWord, words.length).join(" "), speech_rate: speechRate, voice_name: voiceName});
     if (!playing) {
       togglePlaying();
     }
@@ -277,13 +281,8 @@ chrome.storage.sync.get([
 
   function changeAndPlayVoice() {
     isSpeechSettingsChanged = true;
-    speechSynthesis.cancel();
-    utterance = new SpeechSynthesisUtterance('This is what the new voice will sound like.');
-    utterance.rate = speechRate;
-    if (voices.length > 0) {
-      utterance.voice = voices.filter(function(voice) {return voice.name == voiceName})[0];
-    }
-    speechSynthesis.speak(utterance);
+    port.postMessage({type: "stop"});
+    port.postMessage({type: "speak", suppressBoundary: "true", selected_text: 'This is what the new voice will sound like.', speech_rate: speechRate, voice_name: voiceName});
   }
 
   function openHighlightedText(text) {
@@ -333,23 +332,6 @@ chrome.storage.sync.get([
         }
       }, 10);
     }
-  }
-
-  // Fetch the list of English voices and populate the voice options. 
-  speechSynthesis.onvoiceschanged = function() {
-    voices = speechSynthesis.getVoices().filter(isLocalEnglish);
-    var voiceNameSelection = document.getElementById('voice_name');
-    voices.forEach(function(voice, i) {
-      var option = document.createElement('option');
-      option.value = voice.name;
-      option.innerHTML = voice.name;
-      if (voice.name == voiceName) { option.selected = true; }
-      voiceNameSelection.appendChild(option);
-    });
-  }
-
-  function isLocalEnglish(element, index, array) {
-    return element.localService && element.lang.indexOf('en') > -1;
   }
 
   $(document).keydown(function(e) {
@@ -463,7 +445,7 @@ chrome.storage.sync.get([
           restoreUtterance();
           wordElements[previousWord].removeClass('highlighted');
           wordElements[previousWord].css('background-color', '');
-          speechSynthesis.speak(utterance);
+          port.postMessage(utterance);
           $('#voiceread_controls').removeClass('play');
           $('#voiceread_controls').addClass('pause');
           isUtteranceRestored = false;
@@ -477,32 +459,6 @@ chrome.storage.sync.get([
       }
     }
   };
-
-  // function togglePlaying(){
-  //   if (playing){
-  //     speechSynthesis.pause();
-  //     $('#voiceread_controls').removeClass('pause');
-  //     $('#voiceread_controls').addClass('play');
-  //     playing = false;
-  //   } else if (!isSettingsViewActive){
-  //     if (isUtteranceRestored) {
-  //       wordElements[previousWord].removeClass('highlighted');
-  //       wordElements[previousWord].css('background-color', '');
-  //       speechSynthesis.speak(utterance);
-  //       $('#voiceread_controls').removeClass('play');
-  //       $('#voiceread_controls').addClass('pause');
-  //       isUtteranceRestored = false;
-  //       playing = true;        
-  //     } else {
-  //       speechSynthesis.resume();
-  //       $('#voiceread_controls').removeClass('play');
-  //       $('#voiceread_controls').addClass('pause');
-  //       playing = true;
-  //     }
-  //   } else {
-  //     alert ('Please close settings before clicking play.');
-  //   }
-  // };
 
   // Saves options to chrome.storage
   function save_options() {
@@ -518,7 +474,7 @@ chrome.storage.sync.get([
     var line_spacing = $('#line_spacing').val();
     lineSpace = line_spacing;
     var font_type = $('#font_type').val();
-    font = font_type; // TODO: change the callback function. 
+    font = font_type;
     var font_size = $('#font_size').val();
     fontSize = font_size;
     var font_color = $('#font_color').val();
@@ -551,9 +507,8 @@ chrome.storage.sync.get([
       status.html('Options saved.');
       var font_options = document.getElementById("font_type").options;
       for (var option in font_options) {
-        option.selected = false;
+        option.selected = (option.value == font_type);
       }
-      document.getElementById(idsPerFont[font_type]).selected = true;
       setTimeout(function() {
         status.html('');
       }, 750);
@@ -604,13 +559,8 @@ chrome.storage.sync.get([
   function restoreUtterance() {
     isUtteranceRestored = true;
     isSpeechSettingsChanged = false;
-    speechSynthesis.cancel();
-    utterance = new SpeechSynthesisUtterance(words.slice(currentWord, words.length).join(" "));
-    utterance.rate = speechRate;
-    utterance.onboundary = incrementWord;
-    if (voices.length > 0) {
-      utterance.voice = voices.filter(function(voice) {return voice.name == voiceName})[0];
-    }
+    port.postMessage({type: "stop"});
+    utterance = {type: "speak", selected_text: words.slice(currentWord, words.length).join(" "), speech_rate: speechRate, voice_name: voiceName};
   }
 
   function makeSettingsEditable() {
