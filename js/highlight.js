@@ -335,7 +335,7 @@ chrome.storage.sync.get([
   }
 
   $(document).keydown(function(e) {
-    if (e.altKey && String.fromCharCode(e.which) === triggerKey || String.fromCharCode(e.which) === triggerKey.toUpperCase()) {
+    if (e.altKey && (String.fromCharCode(e.which) === triggerKey || String.fromCharCode(e.which) === triggerKey.toUpperCase())) {
       var text = window.getSelection().toString();
       openHighlightedText(text);
     } 
