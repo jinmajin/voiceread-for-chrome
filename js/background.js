@@ -7,14 +7,15 @@ function isValidVoice(voice) {
 
 chrome.runtime.onConnect.addListener(function(port) {
   console.assert(port.name == "voiceread");
-  chrome.tts.getVoices( function(voice_list) {
-    port.postMessage({voices: voice_list.filter(isValidVoice)});      
-  });
-  chrome.fontSettings.getFontList( function(font_list) {
-    port.postMessage({fonts: font_list});      
-  });
   port.onMessage.addListener(function(msg) {
-  	if (msg.type == "speak"){
+  	if (msg.type == "request") {
+      chrome.tts.getVoices( function(voice_list) {
+        port.postMessage({voices: voice_list.filter(isValidVoice)});      
+      });
+      chrome.fontSettings.getFontList( function(font_list) {
+        port.postMessage({fonts: font_list});      
+      }); 
+    } else if (msg.type == "speak"){
     	chrome.tts.speak(msg.selected_text,
     		{
           voiceName: msg.voice_name, // 'native', 

@@ -56,16 +56,6 @@ port.onMessage.addListener(function(msg) {
     incrementWord();
   }
 });
-port.onDisconnect.addListener(function(){
-  // open another port and the current one closes. 
-  port = chrome.runtime.connect({name: 'voiceread'});
-  port.onMessage.addListener(function(msg) {
-    if (msg.event == 'boundary'){
-      incrementWord();    
-    }
-  });
-});
-
 
 var voices = [];
 var wordElements = [];
@@ -232,6 +222,8 @@ chrome.storage.sync.get([
     <button id="cancel">Cancel</button> \
     <button id="save">Save</button> \
   </div></div>');
+
+  port.postMessage({type: 'request'});
 
   $('#voiceread').click(function() {
     isVoiceReadActive = false;
