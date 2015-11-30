@@ -567,6 +567,8 @@ chrome.storage.sync.get([
     $('#page_opacity').prop("readonly", false);
     $('#speech_rate').prop("readonly", false);
     $('#voice_name').prop("disabled", false);
+    $('#save').prop("disabled", false);
+    $('#cancel').prop("disabled", false);
   }
 
   function makeSettingsUneditable() {
@@ -582,6 +584,8 @@ chrome.storage.sync.get([
     $('#page_opacity').prop("readonly", true);
     $('#speech_rate').prop("readonly", true);
     $('#voice_name').prop("disabled", "disabled");
+    $('#save').prop("disabled", "disabled");
+    $('#cancel').prop("disabled", "disabled");
   }
 
   $('#save').click(save_options);
