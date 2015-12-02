@@ -313,12 +313,10 @@ chrome.storage.sync.get([
           }
           bottom = wordElements[currentWord][0].getBoundingClientRect().bottom;
           if (bottom > height) {
-            port.postMessage({type: "pause"});
             wordElements[currentWord-1][0].scrollIntoView(true);
             if (wordElements[currentWord-1][0].getBoundingClientRect().bottom < (parseInt(lineSpace) + parseInt(fontSize))) {
               $('#voiceread_text')[0].scrollTop -= parseInt(lineSpace) + parseInt(fontSize);
             }
-            port.postMessage({type: "resume"});
           }
         }
       }, 10);
