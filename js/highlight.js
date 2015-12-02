@@ -27,6 +27,11 @@ var isVoiceReadActive = false;
 var isSettingsViewActive = false;
 var isSpeechSettingsChanged = false;
 
+var head = 'head';
+if ($('head').length < 1) {
+  head = 'body';
+}
+
 var port = null;
 port = chrome.runtime.connect({name: 'voiceread'});
 port.onMessage.addListener(function(msg) {
@@ -109,11 +114,6 @@ chrome.storage.sync.get([
     autoScroll = settings.autoScroll;
     opacity = settings.pageOpacity;
   } 
-
-  var head = 'head'
-  if ($('head').length < 1) {
-    head = 'body';
-  }
 
   $('<style>').prop('type', 'text/css').html(' \
     #voiceread_container { \
@@ -473,6 +473,10 @@ chrome.storage.sync.get([
     backgroundColor = background_color;
     var highlight_color = $('#highlight_color').val();
     highlightColor = highlight_color;
+    $('<style>').prop('type', 'text/css').html(' \
+      .highlighted { \
+        background-color: ' + highlightColor + '; \
+      }').appendTo(head);
     var speech_rate = $('#speech_rate').val();
     speechRate = speech_rate/200;
     var voice_name = $('#voice_name').val();
