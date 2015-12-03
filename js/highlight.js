@@ -336,7 +336,6 @@ chrome.storage.sync.get([
     }
     if (e.which == 32 && isVoiceReadActive) {
       togglePlaying();
-      return false;
     }
 
     if (e.which == 190 && isVoiceReadActive) {
@@ -356,7 +355,7 @@ chrome.storage.sync.get([
         }, 500);
       }
     }
-
+    return false;
   });
 
   function increaseSpeed() {
