@@ -327,15 +327,18 @@ chrome.storage.sync.get([
     if (e.altKey && (String.fromCharCode(e.which) === triggerKey || String.fromCharCode(e.which) === triggerKey.toUpperCase())) {
       var text = window.getSelection().toString();
       openHighlightedText(text);
+      return false;
     } 
     if ((String.fromCharCode(e.which) === settingsKey || String.fromCharCode(e.which) === settingsKey.toUpperCase()) && isVoiceReadActive) {
       if (playing) {
         togglePlaying();
       }
       toggleSettingsView();
+      return false;
     }
     if (e.which == 32 && isVoiceReadActive) {
       togglePlaying();
+      return false;
     }
 
     if (e.which == 190 && isVoiceReadActive) {
@@ -345,6 +348,7 @@ chrome.storage.sync.get([
           rewindAfterSpeechRateChange(); 
         }, 500);
       }
+      return false;
     }
 
     if (e.which == 188 && isVoiceReadActive) {
@@ -354,8 +358,8 @@ chrome.storage.sync.get([
           rewindAfterSpeechRateChange(); 
         }, 500);
       }
+      return false;
     }
-    return false;
   });
 
   function increaseSpeed() {
