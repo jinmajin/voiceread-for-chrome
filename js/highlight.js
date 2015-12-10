@@ -32,35 +32,7 @@ if ($('head').length < 1) {
   head = 'body';
 }
 
-var port = null;
-port = chrome.runtime.connect({name: 'voiceread'});
-port.onMessage.addListener(function(msg) {
-  if (msg.voices) {
-    // populate the voice options. 
-    voices = msg.voices;
-    var voiceNameSelection = document.getElementById('voice_name');
-    voices.forEach(function(voice) {
-      var option = document.createElement('option');
-      option.value = voice.voiceName;
-      option.innerHTML = voice.voiceName;
-      if (voice.voiceName == voiceName) { option.selected = true; }
-      voiceNameSelection.appendChild(option);
-    });
-  } else if (msg.fonts) {
-    // populate thing with fonts
-    var fontSelection = document.getElementById('font_type');
-    msg.fonts.forEach(function(font_option) {
-      var option = document.createElement('option');
-      option.value = font_option.displayName;
-      option.innerHTML = font_option.displayName;
-      if (font_option.displayName == font) { option.selected = true; }
-      fontSelection.appendChild(option);
-    });
-  } else if (msg.evt && msg.evt == 'boundary'){
-    incrementWord();
-  }
-});
-
+var port = chrome.runtime.connect({name: 'voiceread'});
 var voices = [];
 var wordElements = [];
 var currentWord = 0;
@@ -223,6 +195,34 @@ chrome.storage.sync.get([
   </div></div>');
 
   port.postMessage({type: 'request'});
+  port.onMessage.addListener(function(msg) {
+    if (msg.voices) {
+      // populate the voice options. 
+      voices = msg.voices;
+      var voiceNameSelection = document.getElementById('voice_name');
+      voices.forEach(function(voice) {
+        var option = document.createElement('option');
+        option.value = voice.voiceName;
+        option.innerHTML = voice.voiceName;
+        if (voice.voiceName == voiceName) { option.selected = true; }
+        voiceNameSelection.appendChild(option);
+      });
+    } else if (msg.fonts) {
+      // populate thing with fonts
+      var fontSelection = document.getElementById('font_type');
+      msg.fonts.forEach(function(font_option) {
+        var option = document.createElement('option');
+        option.value = font_option.displayName;
+        option.innerHTML = font_option.displayName;
+        if (font_option.displayName == font) { option.selected = true; }
+        fontSelection.appendChild(option);
+      });
+    } else if (msg.evt && msg.evt == 'boundary'){
+      incrementWord();
+    } else if (msg.evt && msg.evt == 'finished'){
+      playing && togglePlaying();
+    }
+  });
 
   $('#voiceread').click(function() {
     isVoiceReadActive = false;
@@ -255,9 +255,12 @@ chrome.storage.sync.get([
     port.postMessage({type: "stop"});
     currentWord = parseInt(index);
     highlightWord();
-    port.postMessage({type: "speak", selected_text: words.slice(index, words.length).join(" "), speech_rate: speechRate, voice_name: voiceName});
+    port.postMessage({type: "speak", selected_text: words.slice(currentWord, words.length).join(" "), speech_rate: speechRate, voice_name: voiceName});
     if (!playing) {
-      togglePlaying();
+      makeSettingsUneditable();
+      $('#voiceread_controls').removeClass('play');
+      $('#voiceread_controls').addClass('pause');
+      playing = true;
     }
   }
 
@@ -266,7 +269,10 @@ chrome.storage.sync.get([
     highlightWord();
     port.postMessage({type: "speak", selected_text: words.slice(currentWord, words.length).join(" "), speech_rate: speechRate, voice_name: voiceName});
     if (!playing) {
-      togglePlaying();
+      makeSettingsUneditable();
+      $('#voiceread_controls').removeClass('play');
+      $('#voiceread_controls').addClass('pause');
+      playing = true;
     }
   }
 

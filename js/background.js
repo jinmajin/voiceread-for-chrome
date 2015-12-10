@@ -26,6 +26,9 @@ chrome.runtime.onConnect.addListener(function(port) {
     					port.postMessage({evt: 'boundary'});
               lastCharIndex = event.charIndex;
             }
+            if (!msg.suppressBoundary && event.type == 'end'){
+              port.postMessage({evt: 'finished'});
+            }
     			}
     		}
     	);
